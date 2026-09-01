@@ -1,0 +1,332 @@
+'use client'
+
+import React, { useState, useEffect } from 'react'
+import { createClient } from '@/utils/supabase/client'
+import { UserProfile, KepalaKeluarga } from '@/lib/types'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Plus, Search, Pencil, Trash2, Users, ShieldCheck, CheckCircle2, XCircle } from 'lucide-react'
+
+export default function DafuPage() {
+  const supabase = createClient()
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [lingkunganId, setLingkunganId] = useState<string | null>(null)
+  const [lingkunganName, setLingkunganName] = useState<string>('')
+
+  const [kkList, setKkList] = useState<KepalaKeluarga[]>([])
+  const [searchQuery, setSearchQuery] = useState('')
+
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingKk, setEditingKk] = useState<KepalaKeluarga | null>(null)
+  const [formNama, setFormNama] = useState('')
+  const [formAlamat, setFormAlamat] = useState('')
+  const [formIsBiduk, setFormIsBiduk] = useState<boolean>(true)
+  const [submitting, setSubmitting] = useState(false)
+
+  useEffect(() => {
+    async function loadData() {
+      setLoading(true)
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      const { data: uData } = await supabase.from('users').select('*').eq('id', user.id).single()
+      if (uData) setUserProfile(uData)
+
+      let targetLingkunganId = localStorage.getItem('selected_lingkungan_id') || uData?.lingkungan_id || null
+      if (!targetLingkunganId) {
+        const { data: lData } = await supabase.from('lingkungan').select('id, nama_lingkungan').limit(1).single()
+        if (lData) {
+          targetLingkunganId = lData.id
+          setLingkunganName(lData.nama_lingkungan)
+        }
+      } else {
+        const { data: lData } = await supabase.from('lingkungan').select('nama_lingkungan').eq('id', targetLingkunganId).single()
+        if (lData) setLingkunganName(lData.nama_lingkungan)
+      }
+
+      setLingkunganId(targetLingkunganId)
+
+      if (targetLingkunganId) {
+        const { data: kks } = await supabase
+          .from('kepala_keluarga')
+          .select('*')
+          .eq('lingkungan_id', targetLingkunganId)
+          .order('nama_kk', { ascending: true })
+
+        if (kks) setKkList(kks)
+      }
+
+      setLoading(false)
+    }
+
+    loadData()
+  }, [supabase])
+
+  const isSekretaris = userProfile?.role === 'SEKRETARIS'
+
+  const openAddModal = () => {
+    setEditingKk(null)
+    setFormNama('')
+    setFormAlamat('')
+    setFormIsBiduk(true)
+    setIsModalOpen(true)
+  }
+
+  const openEditModal = (kk: KepalaKeluarga) => {
+    setEditingKk(kk)
+    setFormNama(kk.nama_kk)
+    setFormAlamat(kk.alamat || '')
+    setFormIsBiduk(kk.is_biduk)
+    setIsModalOpen(true)
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!lingkunganId || !formNama.trim()) return
+
+    setSubmitting(true)
+    const payload = {
+      lingkungan_id: lingkunganId,
+      nama_kk: formNama.trim(),
+      alamat: formAlamat.trim() || null,
+      is_biduk: formIsBiduk,
+    }
+
+    if (editingKk) {
+      const { error } = await supabase.from('kepala_keluarga').update(payload).eq('id', editingKk.id)
+      if (error) {
+        alert('Gagal mengupdate KK: ' + error.message)
+      } else {
+        setKkList(prev => prev.map(k => k.id === editingKk.id ? { ...k, ...payload } : k))
+        setIsModalOpen(false)
+      }
+    } else {
+      const { data, error } = await supabase.from('kepala_keluarga').insert(payload).select().single()
+      if (error) {
+        alert('Gagal menambah KK: ' + error.message)
+      } else if (data) {
+        setKkList(prev => [...prev, data].sort((a, b) => a.nama_kk.localeCompare(b.nama_kk)))
+        setIsModalOpen(false)
+      }
+    }
+    setSubmitting(false)
+  }
+
+  const handleDelete = async (id: string, nama: string) => {
+    if (!confirm(`Apakah Anda yakin ingin menghapus data Kepala Keluarga "${nama}"?`)) return
+
+    const { error } = await supabase.from('kepala_keluarga').delete().eq('id', id)
+    if (error) {
+      alert('Gagal menghapus KK: ' + error.message)
+    } else {
+      setKkList(prev => prev.filter(k => k.id !== id))
+    }
+  }
+
+  const filteredKkList = kkList.filter(k =>
+    k.nama_kk.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (k.alamat && k.alamat.toLowerCase().includes(searchQuery.toLowerCase()))
+  )
+
+  const totalKK = kkList.length
+  const totalBiduk = kkList.filter(k => k.is_biduk).length
+  const bidukPercentage = totalKK > 0 ? Math.round((totalBiduk / totalKK) * 100) : 0
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1a56a0]"></div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6 max-w-6xl mx-auto">
+      {/* Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">M2. DAFU (Daftar Umat / Kepala Keluarga)</h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Master Data Keluarga Lingkungan {lingkunganName}. Dikurasi & dikelola oleh Sekretaris.
+          </p>
+        </div>
+        {isSekretaris && (
+          <Button onClick={openAddModal} className="bg-[#1a56a0] hover:bg-[#144580] text-white">
+            <Plus className="w-4 h-4 mr-2" />
+            Tambah Kepala Keluarga
+          </Button>
+        )}
+      </div>
+
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="border-slate-200 shadow-xs">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-slate-500">Total Kepala Keluarga (KK)</CardTitle>
+            <Users className="w-5 h-5 text-blue-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-slate-900">{totalKK} <span className="text-sm font-normal text-slate-500">KK</span></div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-slate-200 shadow-xs">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-slate-500">Terdaftar BIDUK KAJ</CardTitle>
+            <ShieldCheck className="w-5 h-5 text-emerald-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-emerald-600">{totalBiduk} <span className="text-sm font-normal text-slate-500">KK</span></div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-slate-200 shadow-xs">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-slate-500">Persentase Terdata BIDUK</CardTitle>
+            <div className="w-5 h-5 font-bold text-indigo-600 text-sm">{bidukPercentage}%</div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-indigo-600">{bidukPercentage}%</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Search & Table Card */}
+      <Card className="border-slate-200 shadow-xs">
+        <CardHeader className="pb-4 border-b border-slate-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <CardTitle className="text-base font-bold text-slate-800">Daftar Kepala Keluarga ({filteredKkList.length})</CardTitle>
+          <div className="relative w-full md:w-72">
+            <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
+            <Input
+              placeholder="Cari nama KK atau alamat..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader className="bg-slate-50">
+              <TableRow>
+                <TableHead className="w-12 text-center">No</TableHead>
+                <TableHead>Nama Kepala Keluarga</TableHead>
+                <TableHead>Alamat Lingkungan</TableHead>
+                <TableHead className="text-center">Status BIDUK KAJ</TableHead>
+                {isSekretaris && <TableHead className="text-right">Aksi</TableHead>}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredKkList.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={isSekretaris ? 5 : 4} className="text-center py-8 text-slate-400">
+                    Tidak ada data Kepala Keluarga ditemukan.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredKkList.map((kk, idx) => (
+                  <TableRow key={kk.id} className="hover:bg-slate-50/80">
+                    <TableCell className="text-center font-medium text-slate-500">{idx + 1}</TableCell>
+                    <TableCell className="font-semibold text-slate-900">{kk.nama_kk}</TableCell>
+                    <TableCell className="text-slate-600 text-sm">{kk.alamat || '-'}</TableCell>
+                    <TableCell className="text-center">
+                      {kk.is_biduk ? (
+                        <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Terdaftar BIDUK
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 bg-slate-100 text-slate-600 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                          <XCircle className="w-3.5 h-3.5" /> Belum BIDUK
+                        </span>
+                      )}
+                    </TableCell>
+                    {isSekretaris && (
+                      <TableCell className="text-right space-x-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => openEditModal(kk)}
+                          className="h-8 w-8 p-0 text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDelete(kk.id, kk.nama_kk)}
+                          className="h-8 w-8 p-0 text-rose-600 hover:text-rose-800 hover:bg-rose-50"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </TableCell>
+                    )}
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      {/* Add / Edit Dialog */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{editingKk ? 'Edit Data Kepala Keluarga' : 'Tambah Kepala Keluarga'}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label htmlFor="nama_kk">Nama Kepala Keluarga *</Label>
+              <Input
+                id="nama_kk"
+                value={formNama}
+                onChange={(e) => setFormNama(e.target.value)}
+                placeholder="Contoh: Petrus Sugeng"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="alamat">Alamat / Blok Rumah</Label>
+              <Input
+                id="alamat"
+                value={formAlamat}
+                onChange={(e) => setFormAlamat(e.target.value)}
+                placeholder="Contoh: Jl. St. Clara No. 12"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="is_biduk">Status Terdaftar BIDUK KAJ</Label>
+              <Select value={formIsBiduk ? 'YA' : 'TIDAK'} onValueChange={(val) => setFormIsBiduk(val === 'YA')}>
+                <SelectTrigger id="is_biduk">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="YA">Ya, Terdaftar di BIDUK KAJ</SelectItem>
+                  <SelectItem value="TIDAK">Tidak / Belum Terdaftar</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <DialogFooter className="pt-4">
+              <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
+                Batal
+              </Button>
+              <Button type="submit" disabled={submitting} className="bg-[#1a56a0] hover:bg-[#144580] text-white">
+                {submitting ? 'Menyimpan...' : 'Simpan Data'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
+}

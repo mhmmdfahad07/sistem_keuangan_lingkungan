@@ -1,0 +1,483 @@
+'use client'
+
+import React, { useState, useEffect } from 'react'
+import { createClient } from '@/utils/supabase/client'
+import { UserProfile, KepalaKeluarga, ProfilLingkungan } from '@/lib/types'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Save, Building, UserCheck, Wallet, Lock, CheckCircle2 } from 'lucide-react'
+
+export default function DaftarIsianPage() {
+  const supabase = createClient()
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+
+  const [lingkunganId, setLingkunganId] = useState<string | null>(null)
+  const [namaLingkungan, setNamaLingkungan] = useState<string>('')
+  const [kkList, setKkList] = useState<KepalaKeluarga[]>([])
+
+  // Form State
+  const [profilId, setProfilId] = useState<string | null>(null)
+  const [ketuaId, setKetuaId] = useState<string>('')
+  const [sekretarisId, setSekretarisId] = useState<string>('')
+  const [bendaharaId, setBendaharaId] = useState<string>('')
+  const [alamatBendahara, setAlamatBendahara] = useState<string>('')
+  const [teleponBendahara, setTeleponBendahara] = useState<string>('')
+  const [periodeMasaBakti, setPeriodeMasaBakti] = useState<string>('2024-2026')
+  const [isHubKerabat, setIsHubKerabat] = useState<boolean>(false)
+  const [isBendaharaKaj, setIsBendaharaKaj] = useState<boolean>(true)
+
+  // Part C Form State
+  const [jenisRekening, setJenisRekening] = useState<string>('Tabungan')
+  const [namaBank, setNamaBank] = useState<string>('BCA')
+  const [noRekening, setNoRekening] = useState<string>('')
+  const [tahunBuku, setTahunBuku] = useState<string>('2026')
+  const [bulanSaldo, setBulanSaldo] = useState<number>(1)
+  const [saldoAwal, setSaldoAwal] = useState<number>(0)
+
+  useEffect(() => {
+    async function loadData() {
+      setLoading(true)
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      let userProf: UserProfile | null = null
+      const { data: uData } = await supabase.from('users').select('*').eq('id', user.id).single()
+      if (uData) {
+        userProf = uData
+        setUserProfile(uData)
+      }
+
+      let targetLingkunganId = localStorage.getItem('selected_lingkungan_id') || uData?.lingkungan_id || null
+      if (!targetLingkunganId) {
+        const { data: lData } = await supabase.from('lingkungan').select('id, nama_lingkungan').limit(1).single()
+        if (lData) {
+          targetLingkunganId = lData.id
+          setNamaLingkungan(lData.nama_lingkungan)
+        }
+      } else {
+        const { data: lData } = await supabase.from('lingkungan').select('nama_lingkungan').eq('id', targetLingkunganId).single()
+        if (lData) setNamaLingkungan(lData.nama_lingkungan)
+      }
+
+      setLingkunganId(targetLingkunganId)
+
+      if (targetLingkunganId) {
+        // Load KK list for droplists
+        const { data: kks } = await supabase
+          .from('kepala_keluarga')
+          .select('*')
+          .eq('lingkungan_id', targetLingkunganId)
+          .order('nama_kk', { ascending: true })
+
+        if (kks) setKkList(kks)
+
+        // Load Profil Lingkungan
+        const { data: profil } = await supabase
+          .from('profil_lingkungan')
+          .select('*')
+          .eq('lingkungan_id', targetLingkunganId)
+          .maybeSingle()
+
+        if (profil) {
+          setProfilId(profil.id)
+          setKetuaId(profil.ketua_id || '')
+          setSekretarisId(profil.sekretaris_id || '')
+          setBendaharaId(profil.bendahara_id || '')
+          setTeleponBendahara(profil.telepon_bendahara || '')
+          setPeriodeMasaBakti(profil.periode_masa_bakti || '2024-2026')
+          setIsHubKerabat(!!profil.is_hub_kerabat)
+          setIsBendaharaKaj(!!profil.is_bendahara_kaj)
+
+          setJenisRekening(profil.jenis_rekening || 'Tabungan')
+          setNamaBank(profil.nama_bank || 'BCA')
+          setNoRekening(profil.no_rekening || '')
+          setTahunBuku(profil.tahun_buku || '2026')
+          setBulanSaldo(profil.bulan_saldo || 1)
+          setSaldoAwal(Number(profil.saldo_awal || 0))
+
+          // Auto-fill bendahara address if bendahara_id exists
+          if (profil.bendahara_id && kks) {
+            const b = kks.find(x => x.id === profil.bendahara_id)
+            setAlamatBendahara(b?.alamat || '')
+          }
+        }
+      }
+
+      setLoading(false)
+    }
+
+    loadData()
+  }, [supabase])
+
+  // Handle Bendahara Selection auto-fill address
+  const handleBendaharaSelect = (id: string) => {
+    setBendaharaId(id)
+    const match = kkList.find(k => k.id === id)
+    if (match) {
+      setAlamatBendahara(match.alamat || '')
+    }
+  }
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!lingkunganId) return
+
+    setSaving(true)
+    setSuccessMessage(null)
+
+    const payload = {
+      lingkungan_id: lingkunganId,
+      ketua_id: ketuaId || null,
+      sekretaris_id: sekretarisId || null,
+      bendahara_id: bendaharaId || null,
+      telepon_bendahara: teleponBendahara,
+      periode_masa_bakti: periodeMasaBakti,
+      is_hub_kerabat: isHubKerabat,
+      is_bendahara_kaj: isBendaharaKaj,
+      jenis_rekening: jenisRekening,
+      nama_bank: namaBank,
+      no_rekening: noRekening,
+      tahun_buku: tahunBuku,
+      bulan_saldo: bulanSaldo,
+      saldo_awal: saldoAwal,
+    }
+
+    let error = null
+    if (profilId) {
+      const res = await supabase.from('profil_lingkungan').update(payload).eq('id', profilId)
+      error = res.error
+    } else {
+      const res = await supabase.from('profil_lingkungan').insert(payload)
+      error = res.error
+    }
+
+    setSaving(false)
+
+    if (error) {
+      alert('Gagal menyimpan profil: ' + error.message)
+    } else {
+      setSuccessMessage('Daftar Isian berhasil disimpan!')
+      setTimeout(() => setSuccessMessage(null), 4000)
+    }
+  }
+
+  const isSekretarisOrAdmin = userProfile?.role === 'SEKRETARIS' || userProfile?.role === 'BENDAHARA'
+  const isSekretarisEditable = userProfile?.role === 'SEKRETARIS'
+  const isBendaharaEditable = userProfile?.role === 'BENDAHARA'
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1a56a0]"></div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6 max-w-5xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">M1. Daftar Isian & Profil Lingkungan</h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Data identitas lingkungan, pengurus (Ketua, Sekretaris, Bendahara), dan informasi pembukuan bank.
+          </p>
+        </div>
+        {isSekretarisOrAdmin && (
+          <Button onClick={handleSave} disabled={saving} className="bg-[#1a56a0] hover:bg-[#144580] text-white">
+            <Save className="w-4 h-4 mr-2" />
+            {saving ? 'Menyimpan...' : 'Simpan Perubahan'}
+          </Button>
+        )}
+      </div>
+
+      {successMessage && (
+        <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-2 text-sm font-medium">
+          <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+          {successMessage}
+        </div>
+      )}
+
+      <form onSubmit={handleSave} className="space-y-6">
+        {/* BAGIAN A: Identitas Lingkungan */}
+        <Card className="border-slate-200 shadow-xs">
+          <CardHeader className="bg-slate-50/50 border-b border-slate-100 flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="text-base font-bold text-[#1a56a0] flex items-center gap-2">
+                <Building className="w-5 h-5" />
+                BAGIAN A: Identitas Lingkungan
+              </CardTitle>
+              <CardDescription>Dikelola & diisi oleh Sekretaris Lingkungan</CardDescription>
+            </div>
+            {!isSekretarisEditable && (
+              <span className="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md flex items-center gap-1 font-medium">
+                <Lock className="w-3.5 h-3.5" /> Read Only (Sekretaris)
+              </span>
+            )}
+          </CardHeader>
+          <CardContent className="p-6 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="nama_lingkungan" className="text-slate-700">Nama Lingkungan</Label>
+                <Input id="nama_lingkungan" value={namaLingkungan} disabled className="bg-slate-100 font-semibold" />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="ketua_id" className="text-slate-700">Ketua Lingkungan</Label>
+                <Select value={ketuaId} onValueChange={(val) => val && setKetuaId(val)} disabled={!isSekretarisEditable}>
+                  <SelectTrigger id="ketua_id">
+                    <SelectValue placeholder="-- Pilih Ketua Lingkungan --" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {kkList.map((kk) => (
+                      <SelectItem key={kk.id} value={kk.id}>{kk.nama_kk}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-[11px] text-slate-400">Sumber data dari Modul DAFU</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="sekretaris_id" className="text-slate-700">Sekretaris Lingkungan</Label>
+                <Select value={sekretarisId} onValueChange={(val) => val && setSekretarisId(val)} disabled={!isSekretarisEditable}>
+                  <SelectTrigger id="sekretaris_id">
+                    <SelectValue placeholder="-- Pilih Sekretaris --" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {kkList.map((kk) => (
+                      <SelectItem key={kk.id} value={kk.id}>{kk.nama_kk}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-[11px] text-slate-400">Sumber data dari Modul DAFU</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* BAGIAN B: Identitas Bendahara */}
+        <Card className="border-slate-200 shadow-xs">
+          <CardHeader className="bg-slate-50/50 border-b border-slate-100 flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="text-base font-bold text-[#1a56a0] flex items-center gap-2">
+                <UserCheck className="w-5 h-5" />
+                BAGIAN B: Identitas Bendahara
+              </CardTitle>
+              <CardDescription>Dikelola & diisi oleh Sekretaris Lingkungan</CardDescription>
+            </div>
+            {!isSekretarisEditable && (
+              <span className="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md flex items-center gap-1 font-medium">
+                <Lock className="w-3.5 h-3.5" /> Read Only (Sekretaris)
+              </span>
+            )}
+          </CardHeader>
+          <CardContent className="p-6 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="bendahara_id" className="text-slate-700">Nama Bendahara Lingkungan</Label>
+                <Select value={bendaharaId} onValueChange={(val) => val && handleBendaharaSelect(val)} disabled={!isSekretarisEditable}>
+                  <SelectTrigger id="bendahara_id">
+                    <SelectValue placeholder="-- Pilih Bendahara --" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {kkList.map((kk) => (
+                      <SelectItem key={kk.id} value={kk.id}>{kk.nama_kk}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="alamat_bendahara" className="text-slate-700">Alamat Bendahara</Label>
+                <Input
+                  id="alamat_bendahara"
+                  value={alamatBendahara}
+                  disabled
+                  placeholder="Otomatis terisi dari DAFU"
+                  className="bg-slate-100"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="telepon" className="text-slate-700">Nomor Telepon / WhatsApp</Label>
+                <Input
+                  id="telepon"
+                  value={teleponBendahara}
+                  onChange={(e) => setTeleponBendahara(e.target.value)}
+                  disabled={!isSekretarisEditable}
+                  placeholder="081234567890"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="periode" className="text-slate-700">Periode Masa Bhakti</Label>
+                <Select value={periodeMasaBakti} onValueChange={(val) => val && setPeriodeMasaBakti(val)} disabled={!isSekretarisEditable}>
+                  <SelectTrigger id="periode">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="2024-2026">2024 - 2026</SelectItem>
+                    <SelectItem value="2027-2029">2027 - 2029</SelectItem>
+                    <SelectItem value="2030-2032">2030 - 2032</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="hub_kerabat" className="text-slate-700">Hubungan Kekerabatan dgn Ketua</Label>
+                <Select
+                  value={isHubKerabat ? 'YA' : 'TIDAK'}
+                  onValueChange={(val) => setIsHubKerabat(val === 'YA')}
+                  disabled={!isSekretarisEditable}
+                >
+                  <SelectTrigger id="hub_kerabat">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="TIDAK">Tidak Ada Hubungan Kekerabatan</SelectItem>
+                    <SelectItem value="YA">Ada Hubungan Kekerabatan</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="biduk_kaj" className="text-slate-700">Terdaftar di BIDUK KAJ</Label>
+                <Select
+                  value={isBendaharaKaj ? 'YA' : 'TIDAK'}
+                  onValueChange={(val) => setIsBendaharaKaj(val === 'YA')}
+                  disabled={!isSekretarisEditable}
+                >
+                  <SelectTrigger id="biduk_kaj">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="YA">Ya, Terdaftar BIDUK</SelectItem>
+                    <SelectItem value="TIDAK">Tidak Terdaftar</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* BAGIAN C: Informasi Pembukuan */}
+        <Card className="border-slate-200 shadow-xs">
+          <CardHeader className="bg-slate-50/50 border-b border-slate-100 flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="text-base font-bold text-[#1a56a0] flex items-center gap-2">
+                <Wallet className="w-5 h-5" />
+                BAGIAN C: Informasi Pembukuan & Bank
+              </CardTitle>
+              <CardDescription>Dikelola & diisi oleh Bendahara Lingkungan</CardDescription>
+            </div>
+            {!isBendaharaEditable && (
+              <span className="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md flex items-center gap-1 font-medium">
+                <Lock className="w-3.5 h-3.5" /> Read Only (Bendahara)
+              </span>
+            )}
+          </CardHeader>
+          <CardContent className="p-6 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="jenis_rekening" className="text-slate-700">Jenis Rekening</Label>
+                <Input
+                  id="jenis_rekening"
+                  value={jenisRekening}
+                  onChange={(e) => setJenisRekening(e.target.value)}
+                  disabled={!isBendaharaEditable}
+                  placeholder="Tabungan / Giro"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="nama_bank" className="text-slate-700">Nama Bank</Label>
+                <Input
+                  id="nama_bank"
+                  value={namaBank}
+                  onChange={(e) => setNamaBank(e.target.value)}
+                  disabled={!isBendaharaEditable}
+                  placeholder="BCA / Mandiri / BRI"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="no_rekening" className="text-slate-700">Nomor Rekening Bank</Label>
+                <Input
+                  id="no_rekening"
+                  value={noRekening}
+                  onChange={(e) => setNoRekening(e.target.value)}
+                  disabled={!isBendaharaEditable}
+                  placeholder="1234567890"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="tahun_buku" className="text-slate-700">Tahun Buku Pembukuan</Label>
+                <Input
+                  id="tahun_buku"
+                  value={tahunBuku}
+                  onChange={(e) => setTahunBuku(e.target.value)}
+                  disabled={!isBendaharaEditable}
+                  placeholder="2026"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="bulan_saldo" className="text-slate-700">Bulan Saldo Awal</Label>
+                <Select
+                  value={bulanSaldo.toString()}
+                  onValueChange={(val) => val && setBulanSaldo(parseInt(val))}
+                  disabled={!isBendaharaEditable}
+                >
+                  <SelectTrigger id="bulan_saldo">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">Januari</SelectItem>
+                    <SelectItem value="2">Februari</SelectItem>
+                    <SelectItem value="3">Maret</SelectItem>
+                    <SelectItem value="4">April</SelectItem>
+                    <SelectItem value="5">Mei</SelectItem>
+                    <SelectItem value="6">Juni</SelectItem>
+                    <SelectItem value="7">Juli</SelectItem>
+                    <SelectItem value="8">Agustus</SelectItem>
+                    <SelectItem value="9">September</SelectItem>
+                    <SelectItem value="10">Oktober</SelectItem>
+                    <SelectItem value="11">November</SelectItem>
+                    <SelectItem value="12">Desember</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="saldo_awal" className="text-slate-700">Saldo Awal Pembukuan (Rp)</Label>
+                <Input
+                  id="saldo_awal"
+                  type="number"
+                  value={saldoAwal}
+                  onChange={(e) => setSaldoAwal(parseFloat(e.target.value) || 0)}
+                  disabled={!isBendaharaEditable}
+                  placeholder="0"
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {isSekretarisOrAdmin && (
+          <div className="flex justify-end">
+            <Button type="submit" disabled={saving} className="bg-[#1a56a0] hover:bg-[#144580] text-white px-8">
+              <Save className="w-4 h-4 mr-2" />
+              {saving ? 'Menyimpan...' : 'Simpan Profil Lingkungan'}
+            </Button>
+          </div>
+        )}
+      </form>
+    </div>
+  )
+}

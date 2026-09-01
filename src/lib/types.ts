@@ -1,0 +1,77 @@
+export type UserRole = 'BENDAHARA' | 'SEKRETARIS' | 'PAROKI';
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  role: UserRole;
+  lingkungan_id: string | null;
+  lingkungan_nama?: string;
+}
+
+export interface Lingkungan {
+  id: string;
+  nama_lingkungan: string;
+}
+
+export interface KepalaKeluarga {
+  id: string;
+  lingkungan_id: string;
+  nama_kk: string;
+  alamat: string | null;
+  is_biduk: boolean;
+}
+
+export interface ProfilLingkungan {
+  id: string;
+  lingkungan_id: string;
+  ketua_id: string | null;
+  sekretaris_id: string | null;
+  bendahara_id: string | null;
+  telepon_bendahara: string | null;
+  periode_masa_bakti: string | null;
+  is_hub_kerabat: boolean;
+  is_bendahara_kaj: boolean;
+  jenis_rekening: string | null;
+  nama_bank: string | null;
+  no_rekening: string | null;
+  saldo_awal: number;
+  tahun_buku: string | null;
+  bulan_saldo: number | null;
+  // Joined details
+  ketua?: KepalaKeluarga;
+  sekretaris?: KepalaKeluarga;
+  bendahara?: KepalaKeluarga;
+}
+
+export interface COA {
+  id: string;
+  nama_akun: string;
+  tipe: 'DEBIT' | 'KREDIT';
+}
+
+export interface JurnalTransaksi {
+  id: string;
+  lingkungan_id: string;
+  kk_id: string | null;
+  tanggal: string;
+  tipe_arus: 'MASUK' | 'KELUAR';
+  coa_debit: string;
+  coa_kredit: string;
+  nominal: number;
+  keterangan: string | null;
+  is_posted: boolean;
+  // Joined details
+  kepala_keluarga?: KepalaKeluarga;
+  account_debit?: COA;
+  account_kredit?: COA;
+}
+
+export interface Aset {
+  id: string;
+  lingkungan_id: string;
+  kategori: string | null;
+  nama_barang: string;
+  tahun_beli: number | null;
+  jumlah: number;
+  harga_satuan: number;
+}
