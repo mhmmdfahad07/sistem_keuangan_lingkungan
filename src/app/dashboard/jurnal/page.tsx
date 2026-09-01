@@ -236,10 +236,10 @@ export default function JurnalPage() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">M4. Jurnal Transaksi Kas Lingkungan</h1>
+          <h1 className="text-2xl font-bold text-[#1B2130] tracking-tight font-serif">Jurnal Transaksi Kas Lingkungan</h1>
 
-          <p className="text-sm text-slate-500 mt-1">
-            Pencatatan kas masuk & kas keluar harian Lingkungan <span className="text-emerald-700 font-semibold">{lingkunganName}</span>.
+          <p className="text-sm text-[#5C6478] mt-1">
+            Pencatatan kas masuk & kas keluar harian Lingkungan <span className="text-[#A9834F] font-semibold">{lingkunganName}</span>.
           </p>
         </div>
 

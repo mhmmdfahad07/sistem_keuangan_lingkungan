@@ -158,7 +158,7 @@ export default function DafuPage() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">M2. DAFU (Daftar Umat / Kepala Keluarga)</h1>
+          <h1 className="text-2xl font-bold text-[#1B2130] tracking-tight font-serif">DAFU (Daftar Umat / Kepala Keluarga)</h1>
           <p className="text-sm text-slate-500 mt-1">
             Master Data Keluarga Lingkungan <span className="text-emerald-700 font-semibold">{lingkunganName}</span>. Dikurasi & dikelola oleh Sekretaris.
           </p>

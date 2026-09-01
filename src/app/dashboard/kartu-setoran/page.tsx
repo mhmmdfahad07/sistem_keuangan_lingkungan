@@ -111,7 +111,7 @@ export default function KartuSetoranPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       <div>
-        <h1 className="text-2xl font-bold text-slate-800 tracking-tight">M7. Kartu Setoran 12 Bulan per KK</h1>
+        <h1 className="text-2xl font-bold text-[#1B2130] tracking-tight font-serif">Kartu Setoran 12 Bulan per KK</h1>
         <p className="text-sm text-slate-500 mt-1">
           Matriks Rekapitulasi Iuran Wajib, Sukarela, Pembangunan, atau Dana Kematian per KK Lingkungan <span className="text-emerald-700 font-semibold">{lingkunganName}</span>.
         </p>

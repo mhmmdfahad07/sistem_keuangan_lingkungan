@@ -165,7 +165,7 @@ export default function AsetPage() {
     <div className="space-y-6 max-w-6xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">M6. Daftar Aset & Inventaris Lingkungan</h1>
+          <h1 className="text-2xl font-bold text-[#1B2130] tracking-tight font-serif">Daftar Aset & Inventaris Lingkungan</h1>
           <p className="text-sm text-slate-500 mt-1">
             Pencatatan inventaris fisik barang Lingkungan <span className="text-emerald-700 font-semibold">{lingkunganName}</span>. Dikelola oleh Bendahara.
           </p>

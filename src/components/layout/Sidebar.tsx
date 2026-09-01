@@ -36,7 +36,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ userRole = 'BENDAHARA' }) => {
       title: 'Daftar Isian',
       href: '/dashboard/daftar-isian',
       icon: ClipboardEdit,
-      roles: ['BENDAHARA', 'PAROKI'],
+      roles: ['BENDAHARA', 'SEKRETARIS', 'PAROKI'],
     },
     {
       title: 'DAFU (Daftar Umat)',
@@ -77,10 +77,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ userRole = 'BENDAHARA' }) => {
   ]
 
   // Filter items based on user role
-  // Sekretaris can ONLY access M2. DAFU
+  // Sekretaris can access Daftar Isian & DAFU
   const visibleNavItems = allNavItems.filter((item) => {
     if (userRole === 'SEKRETARIS') {
-      return item.href === '/dashboard/dafu'
+      return item.href === '/dashboard/daftar-isian' || item.href === '/dashboard/dafu'
     }
     return true
   })
@@ -112,7 +112,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ userRole = 'BENDAHARA' }) => {
           <div className="text-xs font-bold text-white mt-0.5 flex items-center justify-between gap-1">
             <span className="truncate font-serif">
               {userRole === 'BENDAHARA' && 'Bendahara Lingkungan'}
-              {userRole === 'SEKRETARIS' && 'Sekretaris (DAFU Only)'}
+              {userRole === 'SEKRETARIS' && 'Sekretaris Lingkungan'}
               {userRole === 'PAROKI' && 'Pengawas Paroki'}
             </span>
             {userRole === 'PAROKI' && (
@@ -122,7 +122,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ userRole = 'BENDAHARA' }) => {
             )}
             {userRole === 'SEKRETARIS' && (
               <span className="text-[9px] bg-purple-500/20 text-purple-200 border border-purple-500/30 px-1.5 py-0.5 rounded font-semibold flex items-center gap-0.5 shrink-0">
-                <ShieldCheck className="w-2.5 h-2.5" /> DAFU Only
+                <ShieldCheck className="w-2.5 h-2.5" /> Isian & DAFU
               </span>
             )}
           </div>

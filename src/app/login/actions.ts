@@ -6,12 +6,14 @@ import { createClient } from '@/utils/supabase/server'
 import { cookies } from 'next/headers'
 
 export async function login(formData: FormData) {
-  const email = (formData.get('email') as string || '').trim().toLowerCase()
+  const usernameInput = (formData.get('username') as string || formData.get('email') as string || '').trim().toLowerCase()
   const password = formData.get('password') as string
 
-  if (!email || !password) {
-    redirect('/login?message=Email dan password wajib diisi')
+  if (!usernameInput || !password) {
+    redirect('/login?message=Username dan password wajib diisi')
   }
+
+  const email = usernameInput.includes('@') ? usernameInput : `${usernameInput}@example.com`
 
   let role: 'BENDAHARA' | 'SEKRETARIS' | 'PAROKI' = 'BENDAHARA'
   if (email.includes('sekretaris')) role = 'SEKRETARIS'

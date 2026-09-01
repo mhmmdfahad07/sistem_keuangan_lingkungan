@@ -185,7 +185,7 @@ export default function DaftarIsianPage() {
     <div className="space-y-6 max-w-5xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">M1. Daftar Isian & Profil Lingkungan</h1>
+          <h1 className="text-2xl font-bold text-[#1B2130] tracking-tight font-serif">Daftar Isian & Profil Lingkungan</h1>
           <p className="text-sm text-slate-500 mt-1">
             Data identitas lingkungan, pengurus (Ketua, Sekretaris, Bendahara), dan informasi pembukuan bank.
           </p>

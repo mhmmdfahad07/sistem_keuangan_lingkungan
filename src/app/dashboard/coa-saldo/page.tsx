@@ -130,7 +130,7 @@ export default function CoaSaldoPage() {
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       <div>
-        <h1 className="text-2xl font-bold text-slate-800 tracking-tight">M3. Master COA & Saldo Awal Pembukuan</h1>
+        <h1 className="text-2xl font-bold text-[#1B2130] tracking-tight font-serif">Master COA & Saldo Awal Pembukuan</h1>
         <p className="text-sm text-slate-500 mt-1">
           Bagan Akun Standar (Chart of Accounts) dan Pengaturan Saldo Awal Kas Bank Lingkungan.
         </p>

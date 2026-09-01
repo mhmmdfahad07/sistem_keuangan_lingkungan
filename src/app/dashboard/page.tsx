@@ -358,8 +358,8 @@ export default function DashboardOverviewPage() {
                 className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition border border-slate-200/80 bg-slate-50/50"
               >
                 <div className="flex items-center space-x-2.5">
-                  <ClipboardEdit className="w-4 h-4 text-emerald-600" />
-                  <span className="font-semibold text-slate-800">M1. Daftar Isian & Profil</span>
+                  <ClipboardEdit className="w-4 h-4 text-[#A9834F]" />
+                  <span className="font-semibold text-slate-800">Daftar Isian & Profil</span>
                 </div>
                 <ArrowRight className="w-4 h-4 text-slate-400" />
               </Link>
@@ -369,8 +369,8 @@ export default function DashboardOverviewPage() {
                 className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition border border-slate-200/80 bg-slate-50/50"
               >
                 <div className="flex items-center space-x-2.5">
-                  <Users className="w-4 h-4 text-emerald-600" />
-                  <span className="font-semibold text-slate-800">M2. DAFU (Data Umat)</span>
+                  <Users className="w-4 h-4 text-[#A9834F]" />
+                  <span className="font-semibold text-slate-800">DAFU (Data Umat)</span>
                 </div>
                 <ArrowRight className="w-4 h-4 text-slate-400" />
               </Link>
@@ -380,8 +380,8 @@ export default function DashboardOverviewPage() {
                 className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition border border-slate-200/80 bg-slate-50/50"
               >
                 <div className="flex items-center space-x-2.5">
-                  <Receipt className="w-4 h-4 text-emerald-600" />
-                  <span className="font-semibold text-slate-800">M4. Jurnal Transaksi</span>
+                  <Receipt className="w-4 h-4 text-[#A9834F]" />
+                  <span className="font-semibold text-slate-800">Jurnal Transaksi</span>
                 </div>
                 <ArrowRight className="w-4 h-4 text-slate-400" />
               </Link>
@@ -391,8 +391,8 @@ export default function DashboardOverviewPage() {
                 className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition border border-slate-200/80 bg-slate-50/50"
               >
                 <div className="flex items-center space-x-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  <span className="font-semibold text-slate-800">M7. Kartu Setoran 12 Bulan</span>
+                  <CheckCircle2 className="w-4 h-4 text-[#A9834F]" />
+                  <span className="font-semibold text-slate-800">Kartu Setoran 12 Bulan</span>
                 </div>
                 <ArrowRight className="w-4 h-4 text-slate-400" />
               </Link>
