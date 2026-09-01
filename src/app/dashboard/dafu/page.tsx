@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
-import { UserProfile, KepalaKeluarga } from '@/lib/types'
+import { UserRole, UserProfile, KepalaKeluarga } from '@/lib/types'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -40,6 +40,22 @@ export default function DafuPage() {
         if (user) {
           const { data: uData } = await supabase.from('users').select('*').eq('id', user.id).maybeSingle()
           if (uData) setUserProfile(uData)
+        } else {
+          const cookies = typeof document !== 'undefined' ? document.cookie : ''
+          let currentRole: UserRole = 'SEKRETARIS'
+          if (cookies.includes('demo_user_role=BENDAHARA')) {
+            currentRole = 'BENDAHARA'
+          } else if (cookies.includes('demo_user_role=PAROKI')) {
+            currentRole = 'PAROKI'
+          } else if (cookies.includes('demo_user_role=SEKRETARIS')) {
+            currentRole = 'SEKRETARIS'
+          }
+          setUserProfile({
+            id: 'demo-user',
+            email: `${currentRole.toLowerCase()}@example.com`,
+            role: currentRole,
+            lingkungan_id: null,
+          })
         }
 
         let targetLingkunganId = localStorage.getItem('selected_lingkungan_id')
@@ -88,7 +104,7 @@ export default function DafuPage() {
     loadData()
   }, [supabase])
 
-  const userRole = userProfile?.role || 'BENDAHARA'
+  const userRole = userProfile?.role || 'SEKRETARIS'
   const canEdit = userRole === 'SEKRETARIS'
 
   const openAddModal = () => {
@@ -127,6 +143,14 @@ export default function DafuPage() {
       setKkList(prev => {
         const updated = prev.map(k => k.id === editingKk.id ? { ...k, ...payload } : k)
         localStorage.setItem(`custom_kks_${payload.lingkungan_id}`, JSON.stringify(updated))
+        const allSaved = localStorage.getItem('custom_kks_all_store')
+        let allList: KepalaKeluarga[] = []
+        if (allSaved) {
+          try { allList = JSON.parse(allSaved) } catch(e) {}
+        }
+        allList = allList.filter(k => k.id !== editingKk.id)
+        allList.push({ id: editingKk.id, ...payload })
+        localStorage.setItem('custom_kks_all_store', JSON.stringify(allList))
         return updated
       })
       setIsModalOpen(false)
@@ -145,6 +169,14 @@ export default function DafuPage() {
       setKkList(prev => {
         const updated = [...prev, newItem].sort((a, b) => a.nama_kk.localeCompare(b.nama_kk))
         localStorage.setItem(`custom_kks_${payload.lingkungan_id}`, JSON.stringify(updated))
+        const allSaved = localStorage.getItem('custom_kks_all_store')
+        let allList: KepalaKeluarga[] = []
+        if (allSaved) {
+          try { allList = JSON.parse(allSaved) } catch(e) {}
+        }
+        allList = allList.filter(k => k.id !== newItem.id)
+        allList.push(newItem)
+        localStorage.setItem('custom_kks_all_store', JSON.stringify(allList))
         return updated
       })
       setIsModalOpen(false)
