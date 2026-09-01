@@ -270,9 +270,9 @@ export default function DaftarIsianPage() {
   }
 
   const userRole = userProfile?.role || 'BENDAHARA'
-  const isSekretarisOrAdmin = userRole === 'SEKRETARIS' || userRole === 'BENDAHARA'
-  const isSekretarisEditable = userRole === 'SEKRETARIS' || userRole === 'BENDAHARA'
+  const isSekretarisEditable = userRole === 'SEKRETARIS'
   const isBendaharaEditable = userRole === 'BENDAHARA'
+  const isSekretarisOrAdmin = userRole === 'SEKRETARIS' || userRole === 'BENDAHARA'
 
   if (loading) {
     return (
@@ -321,6 +321,10 @@ export default function DaftarIsianPage() {
               <span className="text-xs bg-[#E7F3EC] text-[#2F7A54] border border-[#2F7A54]/20 px-2.5 py-1 rounded-md flex items-center gap-1 font-bold">
                 <CheckCircle2 className="w-3.5 h-3.5 text-[#2F7A54]" /> Akses Input (Sekretaris)
               </span>
+            ) : userRole === 'BENDAHARA' ? (
+              <span className="text-xs bg-amber-100 text-amber-800 border border-amber-200 px-2.5 py-1 rounded-md flex items-center gap-1 font-bold">
+                <Lock className="w-3.5 h-3.5 text-amber-600" /> Read Only (Khusus Sekretaris)
+              </span>
             ) : (
               <span className="text-xs bg-purple-100 text-purple-800 border border-purple-200 px-2.5 py-1 rounded-md flex items-center gap-1 font-bold">
                 <Lock className="w-3.5 h-3.5 text-purple-600" /> Read Only (Pengawas Paroki)
@@ -336,7 +340,9 @@ export default function DaftarIsianPage() {
                 disabled={!isSekretarisEditable}
               >
                 <SelectTrigger id="nama_lingkungan" className="bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500 font-semibold h-11">
-                  <SelectValue placeholder="— Pilih lingkungan —" />
+                  <SelectValue placeholder="— Pilih lingkungan —">
+                    {namaLingkungan ? `Lingkungan ${namaLingkungan}` : '— Pilih lingkungan —'}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent className="max-h-60 overflow-y-auto bg-white border-slate-200 text-slate-900">
                   {lingkunganList.map((l) => (
@@ -410,6 +416,10 @@ export default function DaftarIsianPage() {
             {isSekretarisEditable ? (
               <span className="text-xs bg-[#E7F3EC] text-[#2F7A54] border border-[#2F7A54]/20 px-2.5 py-1 rounded-md flex items-center gap-1 font-bold">
                 <CheckCircle2 className="w-3.5 h-3.5 text-[#2F7A54]" /> Akses Input (Sekretaris)
+              </span>
+            ) : userRole === 'BENDAHARA' ? (
+              <span className="text-xs bg-amber-100 text-amber-800 border border-amber-200 px-2.5 py-1 rounded-md flex items-center gap-1 font-bold">
+                <Lock className="w-3.5 h-3.5 text-amber-600" /> Read Only (Khusus Sekretaris)
               </span>
             ) : (
               <span className="text-xs bg-purple-100 text-purple-800 border border-purple-200 px-2.5 py-1 rounded-md flex items-center gap-1 font-bold">

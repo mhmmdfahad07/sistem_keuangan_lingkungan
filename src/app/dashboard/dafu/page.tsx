@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Plus, Search, Pencil, Trash2, Users, ShieldCheck, CheckCircle2, XCircle } from 'lucide-react'
+import { Plus, Search, Pencil, Trash2, Users, ShieldCheck, CheckCircle2, XCircle, Lock } from 'lucide-react'
 
 export default function DafuPage() {
   const supabase = createClient()
@@ -88,7 +88,8 @@ export default function DafuPage() {
     loadData()
   }, [supabase])
 
-  const canEdit = userProfile?.role === 'SEKRETARIS' || userProfile?.role === 'BENDAHARA' || !userProfile
+  const userRole = userProfile?.role || 'BENDAHARA'
+  const canEdit = userRole === 'SEKRETARIS'
 
   const openAddModal = () => {
     setEditingKk(null)
@@ -194,11 +195,19 @@ export default function DafuPage() {
             Master Data Keluarga Lingkungan <span className="text-emerald-700 font-semibold">{lingkunganName}</span>. Dikurasi & dikelola oleh Sekretaris.
           </p>
         </div>
-        {canEdit && (
+        {canEdit ? (
           <Button onClick={openAddModal} className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-2.5 rounded-xl shadow-xs cursor-pointer">
             <Plus className="w-4 h-4 mr-2 text-emerald-400" />
             Tambah Kepala Keluarga
           </Button>
+        ) : userRole === 'BENDAHARA' ? (
+          <span className="text-xs bg-amber-100 text-amber-800 border border-amber-200 px-3 py-2 rounded-xl flex items-center gap-1.5 font-bold shadow-xs">
+            <Lock className="w-4 h-4 text-amber-600" /> Read Only (Khusus Sekretaris)
+          </span>
+        ) : (
+          <span className="text-xs bg-purple-100 text-purple-800 border border-purple-200 px-3 py-2 rounded-xl flex items-center gap-1.5 font-bold shadow-xs">
+            <Lock className="w-4 h-4 text-purple-600" /> Read Only (Pengawas Paroki)
+          </span>
         )}
       </div>
 

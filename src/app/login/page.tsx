@@ -9,8 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { KeyRound, Eye, EyeOff } from 'lucide-react'
 
 export default function LoginPage() {
-  const [username, setUsername] = useState('bendahara')
-  const [password, setPassword] = useState('password123')
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
 
