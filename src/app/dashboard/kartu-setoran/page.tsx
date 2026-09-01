@@ -103,47 +103,47 @@ export default function KartuSetoranPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1a56a0]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6 max-w-[1400px] mx-auto">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">M7. Kartu Setoran Umat 12 Bulan</h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Matriks rekapitulasi setoran wajib per Kepala Keluarga Lingkungan {lingkunganName}.
-          </p>
-        </div>
+    <div className="space-y-6 max-w-7xl mx-auto">
+      <div>
+        <h1 className="text-2xl font-bold text-white tracking-tight">M7. Kartu Setoran 12 Bulan per KK</h1>
+        <p className="text-sm text-slate-400 mt-1">
+          Matriks Rekapitulasi Iuran Wajib, Sukarela, Pembangunan, atau Dana Kematian per KK Lingkungan <span className="text-emerald-400 font-semibold">{lingkunganName}</span>.
+        </p>
       </div>
 
-      {/* Filter Toolbar */}
-      <Card className="border-slate-200 shadow-xs">
-        <CardContent className="p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      {/* Filter & Toolbar */}
+      <Card className="bg-slate-900/90 border-slate-800 shadow-md">
+        <CardContent className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-3">
             <div className="w-64">
-              <Label className="text-xs text-slate-500 mb-1 block">Pilih Akun Setoran</Label>
+              <Label className="text-xs font-medium text-slate-400 mb-1 block">Jenis Iuran / Pos Penerimaan</Label>
               <Select value={selectedCoa} onValueChange={(val) => val && setSelectedCoa(val)}>
-                <SelectTrigger className="h-9 font-semibold text-slate-800">
+                <SelectTrigger className="h-9 bg-slate-800 border-slate-700 text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-slate-800 border-slate-700 text-white">
                   {coaOptions.map((opt) => (
-                    <SelectItem key={opt.code} value={opt.code}>{opt.name}</SelectItem>
+                    <SelectItem key={opt.code} value={opt.code}>
+                      [{opt.code}] {opt.name}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
             <div className="w-28">
-              <Label className="text-xs text-slate-500 mb-1 block">Tahun</Label>
+              <Label className="text-xs font-medium text-slate-400 mb-1 block">Tahun</Label>
               <Select value={selectedYear.toString()} onValueChange={(v) => v && setSelectedYear(parseInt(v))}>
-                <SelectTrigger className="h-9">
+                <SelectTrigger className="h-9 bg-slate-800 border-slate-700 text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-slate-800 border-slate-700 text-white">
                   <SelectItem value="2026">2026</SelectItem>
                   <SelectItem value="2025">2025</SelectItem>
                   <SelectItem value="2024">2024</SelectItem>
@@ -158,37 +158,37 @@ export default function KartuSetoranPage() {
               placeholder="Cari nama KK..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-9 text-sm"
+              className="pl-9 h-9 text-sm bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-emerald-500"
             />
           </div>
         </CardContent>
       </Card>
 
       {/* Matrix Table View */}
-      <Card className="border-slate-200 shadow-xs overflow-hidden">
-        <CardHeader className="bg-slate-50/50 border-b border-slate-100 py-3">
-          <CardTitle className="text-sm font-bold text-slate-800 flex items-center gap-2">
-            <CreditCard className="w-4 h-4 text-[#1a56a0]" />
+      <Card className="bg-slate-900/90 border-slate-800 shadow-md overflow-hidden">
+        <CardHeader className="bg-slate-800/50 border-b border-slate-800 py-3">
+          <CardTitle className="text-sm font-bold text-white flex items-center gap-2">
+            <CreditCard className="w-4 h-4 text-emerald-400" />
             Rekap Setoran [{selectedCoa}] {coaOptions.find(c => c.code === selectedCoa)?.name.split('-')[1]} Tahun {selectedYear}
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0 overflow-x-auto">
           <Table className="text-xs border-collapse">
-            <TableHeader className="bg-slate-100 text-slate-700">
-              <TableRow>
-                <TableHead className="w-10 text-center sticky left-0 bg-slate-100 z-10 border-r border-slate-200">No</TableHead>
-                <TableHead className="w-48 sticky left-10 bg-slate-100 z-10 border-r border-slate-200 font-bold text-slate-900">
+            <TableHeader className="bg-slate-800/80 text-slate-300">
+              <TableRow className="border-slate-800">
+                <TableHead className="w-10 text-center sticky left-0 bg-slate-800 z-10 border-r border-slate-800 text-slate-400">No</TableHead>
+                <TableHead className="w-48 sticky left-10 bg-slate-800 z-10 border-r border-slate-800 font-bold text-white">
                   Nama Kepala Keluarga
                 </TableHead>
                 {MONTH_NAMES.map((m, idx) => (
-                  <TableHead key={idx} className="w-20 text-center font-semibold border-r border-slate-200">
+                  <TableHead key={idx} className="w-20 text-center font-semibold border-r border-slate-800 text-slate-300">
                     {m.slice(0, 3)}
                   </TableHead>
                 ))}
-                <TableHead className="w-28 text-right font-bold text-slate-900 bg-slate-200">Total Setor</TableHead>
+                <TableHead className="w-28 text-right font-bold text-emerald-400 bg-slate-800/90">Total Setor</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody className="divide-y divide-slate-800">
               {filteredKkList.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={15} className="text-center py-8 text-slate-400">
@@ -199,29 +199,29 @@ export default function KartuSetoranPage() {
                 filteredKkList.map((kk, idx) => {
                   let kkTotalYear = 0
                   return (
-                    <TableRow key={kk.id} className="hover:bg-slate-50 border-b border-slate-200">
-                      <TableCell className="text-center font-medium text-slate-500 sticky left-0 bg-white border-r border-slate-200">
+                    <TableRow key={kk.id} className="hover:bg-slate-800/50 border-b border-slate-800">
+                      <TableCell className="text-center font-mono text-xs text-slate-400 sticky left-0 bg-slate-900 border-r border-slate-800">
                         {idx + 1}
                       </TableCell>
-                      <TableCell className="font-semibold text-slate-900 sticky left-10 bg-white border-r border-slate-200 truncate">
+                      <TableCell className="font-semibold text-white sticky left-10 bg-slate-900 border-r border-slate-800 truncate">
                         {kk.nama_kk}
                       </TableCell>
                       {MONTH_NAMES.map((_, mIdx) => {
                         const amount = getMatrixNominal(kk.id, mIdx + 1)
                         kkTotalYear += amount
                         return (
-                          <TableCell key={mIdx} className="text-center border-r border-slate-100 p-1">
+                          <TableCell key={mIdx} className="text-center border-r border-slate-800/60 p-1">
                             {amount > 0 ? (
-                              <span className="inline-block bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded text-[10px]" title={formatRupiah(amount)}>
+                              <span className="inline-block bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold px-1.5 py-0.5 rounded text-[10px]" title={formatRupiah(amount)}>
                                 ✓ {amount >= 1000 ? `${amount / 1000}k` : amount}
                               </span>
                             ) : (
-                              <span className="text-slate-300 font-mono text-[10px]">-</span>
+                              <span className="text-slate-600 font-mono text-[10px]">-</span>
                             )}
                           </TableCell>
                         )
                       })}
-                      <TableCell className="text-right font-bold font-mono text-emerald-700 bg-slate-50">
+                      <TableCell className="text-right font-mono font-extrabold text-emerald-400 bg-slate-800/30 px-3">
                         {formatRupiah(kkTotalYear)}
                       </TableCell>
                     </TableRow>

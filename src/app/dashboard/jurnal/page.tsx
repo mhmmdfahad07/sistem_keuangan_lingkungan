@@ -226,7 +226,7 @@ export default function JurnalPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1a56a0]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
       </div>
     )
   }
@@ -236,13 +236,15 @@ export default function JurnalPage() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">M4. Jurnal Transaksi (Double Entry)</h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Pencatatan kas masuk & kas keluar harian Lingkungan {lingkunganName}.
+          <h1 className="text-2xl font-bold text-white tracking-tight">M4. Jurnal Transaksi Kas Lingkungan</h1>
+
+          <p className="text-sm text-slate-400 mt-1">
+            Pencatatan kas masuk & kas keluar harian Lingkungan <span className="text-emerald-400 font-semibold">{lingkunganName}</span>.
           </p>
         </div>
+
         {isBendahara && (
-          <Button onClick={openNewJournalModal} className="bg-[#1a56a0] hover:bg-[#144580] text-white">
+          <Button onClick={openNewJournalModal} className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-600/20 border border-emerald-500/30 cursor-pointer">
             <Plus className="w-4 h-4 mr-2" />
             Input Jurnal Transaksi
           </Button>
@@ -250,16 +252,16 @@ export default function JurnalPage() {
       </div>
 
       {/* Filter & Posting Toolbar Card */}
-      <Card className="border-slate-200 shadow-xs">
+      <Card className="bg-slate-900/90 border-slate-800 shadow-md">
         <CardContent className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-3">
             <div className="w-40">
-              <Label className="text-xs text-slate-500 mb-1 block">Bulan Transaksi</Label>
+              <Label className="text-xs font-medium text-slate-400 mb-1 block">Bulan Transaksi</Label>
               <Select value={selectedMonth.toString()} onValueChange={(v) => v && setSelectedMonth(parseInt(v))}>
-                <SelectTrigger className="h-9">
+                <SelectTrigger className="h-9 bg-slate-800 border-slate-700 text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-slate-800 border-slate-700 text-white">
                   {MONTH_NAMES.map((m, idx) => (
                     <SelectItem key={idx} value={(idx + 1).toString()}>{m}</SelectItem>
                   ))}
@@ -268,12 +270,12 @@ export default function JurnalPage() {
             </div>
 
             <div className="w-28">
-              <Label className="text-xs text-slate-500 mb-1 block">Tahun</Label>
+              <Label className="text-xs font-medium text-slate-400 mb-1 block">Tahun</Label>
               <Select value={selectedYear.toString()} onValueChange={(v) => v && setSelectedYear(parseInt(v))}>
-                <SelectTrigger className="h-9">
+                <SelectTrigger className="h-9 bg-slate-800 border-slate-700 text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-slate-800 border-slate-700 text-white">
                   <SelectItem value="2026">2026</SelectItem>
                   <SelectItem value="2025">2025</SelectItem>
                   <SelectItem value="2024">2024</SelectItem>
@@ -281,11 +283,11 @@ export default function JurnalPage() {
               </Select>
             </div>
 
-            <div className="pt-5 flex items-center gap-4 text-xs font-semibold">
-              <span className="text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
+            <div className="pt-5 flex items-center gap-3 text-xs font-bold">
+              <span className="text-emerald-300 bg-emerald-500/20 px-3 py-1.5 rounded-lg border border-emerald-500/30">
                 Masuk: {formatRupiah(monthKasMasuk)}
               </span>
-              <span className="text-rose-700 bg-rose-50 px-2.5 py-1 rounded-md border border-rose-200">
+              <span className="text-rose-300 bg-rose-500/20 px-3 py-1.5 rounded-lg border border-rose-500/30">
                 Keluar: {formatRupiah(monthKasKeluar)}
               </span>
             </div>
@@ -293,8 +295,8 @@ export default function JurnalPage() {
 
           <div className="flex items-center gap-2">
             {isMonthPosted ? (
-              <span className="inline-flex items-center gap-1.5 bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1.5 rounded-lg border border-amber-300">
-                <Lock className="w-4 h-4 text-amber-700" />
+              <span className="inline-flex items-center gap-1.5 bg-amber-500/20 text-amber-300 text-xs font-bold px-3 py-1.5 rounded-xl border border-amber-500/30">
+                <Lock className="w-4 h-4 text-amber-400" />
                 Bulan Ini Dikunci (Posted)
               </span>
             ) : (
@@ -302,7 +304,7 @@ export default function JurnalPage() {
                 <Button
                   onClick={handleLockMonth}
                   disabled={postingLoading || filteredJournals.length === 0}
-                  className="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold"
+                  className="bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold shadow-md cursor-pointer"
                 >
                   <Lock className="w-3.5 h-3.5 mr-1.5" />
                   {postingLoading ? 'Mengunci...' : 'Kunci Bulan (Posting)'}
@@ -314,29 +316,29 @@ export default function JurnalPage() {
       </Card>
 
       {/* Transactions Table Card */}
-      <Card className="border-slate-200 shadow-xs">
-        <CardHeader className="pb-3 border-b border-slate-100 flex flex-row items-center justify-between">
+      <Card className="bg-slate-900/90 border-slate-800 shadow-md">
+        <CardHeader className="pb-3 border-b border-slate-800 flex flex-row items-center justify-between">
           <div>
-            <CardTitle className="text-base font-bold text-slate-800">
+            <CardTitle className="text-base font-bold text-white">
               Jurnal {MONTH_NAMES[selectedMonth - 1]} {selectedYear} ({filteredJournals.length} Transaksi)
             </CardTitle>
           </div>
         </CardHeader>
         <CardContent className="p-0">
           <Table>
-            <TableHeader className="bg-slate-50">
-              <TableRow>
-                <TableHead className="w-28">Tanggal</TableHead>
-                <TableHead className="w-24">Arus</TableHead>
-                <TableHead>Keterangan & Penyetor</TableHead>
-                <TableHead className="w-32 text-center">Debet (COA)</TableHead>
-                <TableHead className="w-32 text-center">Kredit (COA)</TableHead>
-                <TableHead className="text-right">Nominal (Rp)</TableHead>
-                <TableHead className="w-20 text-center">Status</TableHead>
-                {isBendahara && <TableHead className="w-16 text-right">Aksi</TableHead>}
+            <TableHeader className="bg-slate-800/80 border-b border-slate-800">
+              <TableRow className="border-slate-800">
+                <TableHead className="w-28 text-slate-300">Tanggal</TableHead>
+                <TableHead className="w-24 text-slate-300">Arus</TableHead>
+                <TableHead className="text-slate-300">Keterangan & Penyetor</TableHead>
+                <TableHead className="w-32 text-center text-slate-300">Debet (COA)</TableHead>
+                <TableHead className="w-32 text-center text-slate-300">Kredit (COA)</TableHead>
+                <TableHead className="text-right text-slate-300">Nominal (Rp)</TableHead>
+                <TableHead className="w-20 text-center text-slate-300">Status</TableHead>
+                {isBendahara && <TableHead className="w-16 text-right text-slate-300">Aksi</TableHead>}
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody className="divide-y divide-slate-800">
               {filteredJournals.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={isBendahara ? 8 : 7} className="text-center py-8 text-slate-400">
@@ -345,47 +347,47 @@ export default function JurnalPage() {
                 </TableRow>
               ) : (
                 filteredJournals.map((j) => (
-                  <TableRow key={j.id} className="hover:bg-slate-50">
-                    <TableCell className="font-mono text-xs font-semibold text-slate-700">
+                  <TableRow key={j.id} className="hover:bg-slate-800/50 border-slate-800">
+                    <TableCell className="font-mono text-xs font-semibold text-slate-300">
                       {formatDateIndo(j.tanggal)}
                     </TableCell>
                     <TableCell>
                       {j.tipe_arus === 'MASUK' ? (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full">
                           <TrendingUp className="w-3 h-3" /> MASUK
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-rose-100 text-rose-800 px-2 py-0.5 rounded-full">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded-full">
                           <TrendingDown className="w-3 h-3" /> KELUAR
                         </span>
                       )}
                     </TableCell>
                     <TableCell>
-                      <p className="font-semibold text-slate-900 text-sm">{j.keterangan || '-'}</p>
+                      <p className="font-semibold text-white text-sm">{j.keterangan || '-'}</p>
                       {j.kepala_keluarga?.nama_kk && (
-                        <p className="text-xs text-slate-500 mt-0.5">Penyetor: {j.kepala_keluarga.nama_kk}</p>
+                        <p className="text-xs text-slate-400 mt-0.5">Penyetor: {j.kepala_keluarga.nama_kk}</p>
                       )}
                     </TableCell>
-                    <TableCell className="text-center font-mono text-xs font-semibold text-blue-700 bg-blue-50/50">
+                    <TableCell className="text-center font-mono text-xs font-bold text-blue-400 bg-blue-500/10 border border-blue-500/20 rounded">
                       {j.coa_debit}
                     </TableCell>
-                    <TableCell className="text-center font-mono text-xs font-semibold text-emerald-700 bg-emerald-50/50">
+                    <TableCell className="text-center font-mono text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded">
                       {j.coa_kredit}
                     </TableCell>
                     <TableCell
                       className={`text-right font-bold font-mono text-sm ${
-                        j.tipe_arus === 'MASUK' ? 'text-emerald-600' : 'text-rose-600'
+                        j.tipe_arus === 'MASUK' ? 'text-emerald-400' : 'text-rose-400'
                       }`}
                     >
                       {j.tipe_arus === 'MASUK' ? '+' : '-'} {formatRupiah(Number(j.nominal))}
                     </TableCell>
                     <TableCell className="text-center">
                       {j.is_posted ? (
-                        <span className="text-[10px] bg-slate-200 text-slate-700 font-bold px-2 py-0.5 rounded">
+                        <span className="text-[10px] bg-slate-800 text-amber-300 border border-amber-500/30 font-bold px-2 py-0.5 rounded">
                           POSTED
                         </span>
                       ) : (
-                        <span className="text-[10px] bg-blue-100 text-blue-800 font-medium px-2 py-0.5 rounded">
+                        <span className="text-[10px] bg-slate-800 text-slate-400 border border-slate-700 font-medium px-2 py-0.5 rounded">
                           DRAFT
                         </span>
                       )}
@@ -397,7 +399,7 @@ export default function JurnalPage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => handleDeleteJournal(j.id, j.is_posted)}
-                            className="h-7 w-7 p-0 text-rose-600 hover:bg-rose-50"
+                            className="h-7 w-7 p-0 text-rose-400 hover:text-rose-300 hover:bg-slate-800 cursor-pointer"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </Button>
@@ -414,23 +416,23 @@ export default function JurnalPage() {
 
       {/* Input Journal Dialog */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-lg bg-slate-900 border-slate-800 text-white">
           <DialogHeader>
-            <DialogTitle className="text-[#1a56a0] flex items-center gap-2">
-              <Receipt className="w-5 h-5" /> Input Transaksi Jurnal Baru
+            <DialogTitle className="text-white font-bold flex items-center gap-2">
+              <Receipt className="w-5 h-5 text-emerald-400" /> Input Transaksi Jurnal Baru
             </DialogTitle>
           </DialogHeader>
 
           <form onSubmit={handleSaveJournal} className="space-y-4 py-2">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label>1. Tipe Arus Kas *</Label>
+                <Label className="text-slate-300">1. Tipe Arus Kas *</Label>
                 <div className="grid grid-cols-2 gap-2">
                   <Button
                     type="button"
                     variant={tipeArus === 'MASUK' ? 'default' : 'outline'}
                     onClick={() => handleArusChange('MASUK')}
-                    className={tipeArus === 'MASUK' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : ''}
+                    className={tipeArus === 'MASUK' ? 'bg-emerald-600 hover:bg-emerald-500 text-white font-bold' : 'border-slate-700 text-slate-300'}
                   >
                     Kas Masuk
                   </Button>
@@ -438,7 +440,7 @@ export default function JurnalPage() {
                     type="button"
                     variant={tipeArus === 'KELUAR' ? 'default' : 'outline'}
                     onClick={() => handleArusChange('KELUAR')}
-                    className={tipeArus === 'KELUAR' ? 'bg-rose-600 hover:bg-rose-700 text-white' : ''}
+                    className={tipeArus === 'KELUAR' ? 'bg-rose-600 hover:bg-rose-500 text-white font-bold' : 'border-slate-700 text-slate-300'}
                   >
                     Kas Keluar
                   </Button>
@@ -446,24 +448,25 @@ export default function JurnalPage() {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="tanggal">Tanggal Transaksi *</Label>
+                <Label htmlFor="tanggal" className="text-slate-300">Tanggal Transaksi *</Label>
                 <Input
                   id="tanggal"
                   type="date"
                   value={tanggal}
                   onChange={(e) => setTanggal(e.target.value)}
                   required
+                  className="bg-slate-800 border-slate-700 text-white focus:border-emerald-500"
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="jenis">2. Jenis Transaksi (Auto-COA) *</Label>
+              <Label htmlFor="jenis" className="text-slate-300">2. Jenis Transaksi (Auto-COA) *</Label>
               <Select value={jenisCode} onValueChange={(val) => val && handleJenisChange(val)}>
-                <SelectTrigger id="jenis">
+                <SelectTrigger id="jenis" className="bg-slate-800 border-slate-700 text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="max-h-60 overflow-y-auto">
+                <SelectContent className="max-h-60 overflow-y-auto bg-slate-800 border-slate-700 text-white">
                   {TRANSACTION_TYPES.filter(t => t.category === tipeArus).map((t) => (
                     <SelectItem key={t.code} value={t.code}>
                       [{t.code}] {t.name}
@@ -474,16 +477,16 @@ export default function JurnalPage() {
             </div>
 
             {/* Double Entry Automatic Mapping Display */}
-            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs grid grid-cols-2 gap-2">
+            <div className="p-3 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs grid grid-cols-2 gap-2">
               <div>
-                <span className="text-slate-500 block">Akun DEBIT:</span>
-                <span className="font-mono font-bold text-blue-700">
+                <span className="text-slate-400 block">Akun DEBIT:</span>
+                <span className="font-mono font-bold text-blue-400">
                   [{coaDebit}] {coaList.find(c => c.id === coaDebit)?.nama_akun || ''}
                 </span>
               </div>
               <div>
-                <span className="text-slate-500 block">Akun KREDIT:</span>
-                <span className="font-mono font-bold text-emerald-700">
+                <span className="text-slate-400 block">Akun KREDIT:</span>
+                <span className="font-mono font-bold text-emerald-400">
                   [{coaKredit}] {coaList.find(c => c.id === coaKredit)?.nama_akun || ''}
                 </span>
               </div>
@@ -491,12 +494,12 @@ export default function JurnalPage() {
 
             {tipeArus === 'MASUK' && (
               <div className="space-y-1.5">
-                <Label htmlFor="kk_id">Kepala Keluarga / Penyetor (Opsional)</Label>
+                <Label htmlFor="kk_id" className="text-slate-300">Kepala Keluarga / Penyetor (Opsional)</Label>
                 <Select value={kkId} onValueChange={(val) => setKkId(val || '')}>
-                  <SelectTrigger id="kk_id">
+                  <SelectTrigger id="kk_id" className="bg-slate-800 border-slate-700 text-white">
                     <SelectValue placeholder="-- Pilih Kepala Keluarga --" />
                   </SelectTrigger>
-                  <SelectContent className="max-h-56 overflow-y-auto">
+                  <SelectContent className="max-h-56 overflow-y-auto bg-slate-800 border-slate-700 text-white">
                     {kkList.map((kk) => (
                       <SelectItem key={kk.id} value={kk.id}>{kk.nama_kk}</SelectItem>
                     ))}
@@ -506,33 +509,35 @@ export default function JurnalPage() {
             )}
 
             <div className="space-y-1.5">
-              <Label htmlFor="nominal">Nominal Transaksi (Rp) *</Label>
+              <Label htmlFor="nominal" className="text-slate-300">Nominal Transaksi (Rp) *</Label>
               <Input
                 id="nominal"
                 type="number"
-                value={nominal}
-                onChange={(e) => setNominal(parseFloat(e.target.value) || 0)}
+                value={nominal || ''}
+                onChange={(e) => setNominal(Number(e.target.value))}
                 placeholder="0"
                 required
+                className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-emerald-500 font-mono text-base font-bold"
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="keterangan">Keterangan Transaksi</Label>
+              <Label htmlFor="keterangan" className="text-slate-300">Keterangan / Uraian (Opsional)</Label>
               <Input
                 id="keterangan"
                 value={keterangan}
                 onChange={(e) => setKeterangan(e.target.value)}
-                placeholder="Contoh: Iuran Kas Lingkungan Bulan Januari"
+                placeholder="Contoh: Kolekte Misa Lingkungan Minggu I"
+                className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-emerald-500"
               />
             </div>
 
             <DialogFooter className="pt-4">
-              <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
+              <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} className="border-slate-700 text-slate-300 hover:bg-slate-800">
                 Batal
               </Button>
-              <Button type="submit" disabled={submitting} className="bg-[#1a56a0] hover:bg-[#144580] text-white">
-                {submitting ? 'Menyimpan...' : 'Simpan Jurnal'}
+              <Button type="submit" disabled={submitting} className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold cursor-pointer">
+                {submitting ? 'Menyimpan...' : 'Simpan Transaksi'}
               </Button>
             </DialogFooter>
           </form>

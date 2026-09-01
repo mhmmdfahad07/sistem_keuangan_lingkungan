@@ -160,7 +160,7 @@ export default function LaporanPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1a56a0]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
       </div>
     )
   }
@@ -170,9 +170,9 @@ export default function LaporanPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">M5. Laporan Aktivitas Finansial</h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Rekapitulasi Penerimaan & Pengeluaran Kas Lingkungan {lingkunganName}.
+          <h1 className="text-2xl font-bold text-white tracking-tight">M5. Laporan Aktivitas Finansial</h1>
+          <p className="text-sm text-slate-400 mt-1">
+            Rekapitulasi Penerimaan & Pengeluaran Kas Lingkungan <span className="text-emerald-400 font-semibold">{lingkunganName}</span>.
           </p>
         </div>
 
@@ -180,7 +180,7 @@ export default function LaporanPage() {
           <Button
             onClick={() => window.print()}
             variant="outline"
-            className="border-slate-300 text-slate-700"
+            className="border-slate-700 text-slate-300 hover:bg-slate-800 cursor-pointer"
           >
             <Printer className="w-4 h-4 mr-2" />
             Cetak
@@ -189,7 +189,7 @@ export default function LaporanPage() {
           <Button
             onClick={handleSyncGoogleSheets}
             disabled={exporting}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-xs"
+            className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-600/20 border border-emerald-500/30 cursor-pointer"
           >
             <FileSpreadsheet className="w-4 h-4 mr-2" />
             {exporting ? 'Syncing...' : 'Sync to Google Sheets'}
@@ -198,16 +198,16 @@ export default function LaporanPage() {
       </div>
 
       {exportResult && (
-        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-center justify-between gap-4">
+        <div className="p-4 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+            <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
             <span className="text-sm font-medium">{exportResult.msg}</span>
           </div>
           <a
             href={exportResult.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center text-xs font-bold text-emerald-700 hover:underline bg-white px-3 py-1.5 rounded-md border border-emerald-300"
+            className="inline-flex items-center text-xs font-bold text-emerald-300 hover:underline bg-slate-900 px-3 py-1.5 rounded-lg border border-emerald-500/40"
           >
             Buka Google Sheets <ExternalLink className="w-3.5 h-3.5 ml-1" />
           </a>
@@ -215,15 +215,15 @@ export default function LaporanPage() {
       )}
 
       {/* Filter Card */}
-      <Card className="border-slate-200 shadow-xs">
+      <Card className="bg-slate-900/90 border-slate-800 shadow-md">
         <CardContent className="p-4 flex items-center gap-4">
           <div className="w-44">
-            <Label className="text-xs text-slate-500 mb-1 block">Bulan Laporan</Label>
+            <Label className="text-xs font-medium text-slate-400 mb-1 block">Bulan Laporan</Label>
             <Select value={selectedMonth.toString()} onValueChange={(v) => v && setSelectedMonth(parseInt(v))}>
-              <SelectTrigger className="h-9">
+              <SelectTrigger className="h-9 bg-slate-800 border-slate-700 text-white">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-slate-800 border-slate-700 text-white">
                 {MONTH_NAMES.map((m, idx) => (
                   <SelectItem key={idx} value={(idx + 1).toString()}>{m}</SelectItem>
                 ))}

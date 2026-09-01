@@ -122,7 +122,7 @@ export default function CoaSaldoPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1a56a0]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
       </div>
     )
   }
@@ -130,62 +130,64 @@ export default function CoaSaldoPage() {
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">M3. Master COA & Saldo Awal Pembukuan</h1>
-        <p className="text-sm text-slate-500 mt-1">
+        <h1 className="text-2xl font-bold text-white tracking-tight">M3. Master COA & Saldo Awal Pembukuan</h1>
+        <p className="text-sm text-slate-400 mt-1">
           Bagan Akun Standar (Chart of Accounts) dan Pengaturan Saldo Awal Kas Bank Lingkungan.
         </p>
       </div>
 
       {/* Saldo Awal Input Card */}
-      <Card className="border-slate-200 shadow-xs">
-        <CardHeader className="bg-slate-50/50 border-b border-slate-100 flex flex-row items-center justify-between">
+      <Card className="bg-slate-900/90 border-slate-800 shadow-md">
+        <CardHeader className="bg-slate-800/50 border-b border-slate-800 flex flex-row items-center justify-between">
           <div>
-            <CardTitle className="text-base font-bold text-[#1a56a0] flex items-center gap-2">
+            <CardTitle className="text-base font-bold text-emerald-400 flex items-center gap-2">
               <BookOpen className="w-5 h-5" />
               Pengaturan Saldo Awal Bank (Kode Akun 1100)
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-slate-400">
               {isLocked
                 ? 'Saldo awal terkunci karena jurnal transaksi bulan terkait sudah ditutup (Posted).'
                 : 'Diisi oleh Bendahara saat memulai pembukuan tahun buku.'}
             </CardDescription>
           </div>
           {isLocked && (
-            <span className="text-xs bg-amber-100 text-amber-800 px-3 py-1 rounded-full font-semibold flex items-center gap-1">
-              <Lock className="w-3.5 h-3.5" /> Terkunci (Posted)
+            <span className="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full font-bold flex items-center gap-1">
+              <Lock className="w-3.5 h-3.5 text-amber-400" /> Terkunci (Posted)
             </span>
           )}
         </CardHeader>
         <CardContent className="p-6">
           {successMsg && (
-            <div className="p-3 mb-4 rounded-lg bg-emerald-50 text-emerald-800 text-sm font-medium flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <div className="p-3 mb-4 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-sm font-medium flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
               {successMsg}
             </div>
           )}
 
           <form onSubmit={handleSaveSaldoAwal} className="flex flex-col sm:flex-row items-end gap-4">
             <div className="space-y-2 flex-1">
-              <Label htmlFor="tahun">Tahun Buku</Label>
+              <Label htmlFor="tahun" className="text-slate-300">Tahun Buku</Label>
               <Input
                 id="tahun"
                 value={tahunBuku}
                 onChange={(e) => setTahunBuku(e.target.value)}
                 disabled={isLocked || !isBendahara}
+                className="bg-slate-800 border-slate-700 text-white focus:border-emerald-500"
               />
             </div>
             <div className="space-y-2 flex-1">
-              <Label htmlFor="saldo">Nominal Saldo Awal Bank (Rp)</Label>
+              <Label htmlFor="saldo" className="text-slate-300">Nominal Saldo Awal Bank (Rp)</Label>
               <Input
                 id="saldo"
                 type="number"
                 value={saldoAwal}
                 onChange={(e) => setSaldoAwal(parseFloat(e.target.value) || 0)}
                 disabled={isLocked || !isBendahara}
+                className="bg-slate-800 border-slate-700 text-white font-mono font-bold focus:border-emerald-500"
               />
             </div>
             {isBendahara && !isLocked && (
-              <Button type="submit" disabled={saving} className="bg-[#1a56a0] hover:bg-[#144580] text-white">
+              <Button type="submit" disabled={saving} className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-600/20 cursor-pointer">
                 <Save className="w-4 h-4 mr-2" />
                 {saving ? 'Menyimpan...' : 'Simpan Saldo Awal'}
               </Button>
@@ -195,31 +197,31 @@ export default function CoaSaldoPage() {
       </Card>
 
       {/* COA Table Card */}
-      <Card className="border-slate-200 shadow-xs">
-        <CardHeader className="border-b border-slate-100">
-          <CardTitle className="text-base font-bold text-slate-800">Master Chart of Accounts (COA)</CardTitle>
-          <CardDescription>Standar kode akun transaksi Gereja St. Clara</CardDescription>
+      <Card className="bg-slate-900/90 border-slate-800 shadow-md">
+        <CardHeader className="border-b border-slate-800">
+          <CardTitle className="text-base font-bold text-white">Master Chart of Accounts (COA)</CardTitle>
+          <CardDescription className="text-slate-400">Standar kode akun transaksi Gereja St. Clara</CardDescription>
         </CardHeader>
         <CardContent className="p-0">
           <Table>
-            <TableHeader className="bg-slate-50">
-              <TableRow>
-                <TableHead className="w-24">Kode Akun</TableHead>
-                <TableHead>Nama Akun / Klasifikasi</TableHead>
-                <TableHead className="w-32 text-center">Tipe Normal</TableHead>
+            <TableHeader className="bg-slate-800/80 border-b border-slate-800">
+              <TableRow className="border-slate-800">
+                <TableHead className="w-24 text-slate-300">Kode Akun</TableHead>
+                <TableHead className="text-slate-300">Nama Akun / Klasifikasi</TableHead>
+                <TableHead className="w-32 text-center text-slate-300">Tipe Normal</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody className="divide-y divide-slate-800">
               {coaList.map((c) => (
-                <TableRow key={c.id} className="hover:bg-slate-50">
-                  <TableCell className="font-mono font-bold text-[#1a56a0]">{c.id}</TableCell>
-                  <TableCell className="font-medium text-slate-800">{c.nama_akun}</TableCell>
+                <TableRow key={c.id} className="hover:bg-slate-800/50 border-slate-800">
+                  <TableCell className="font-mono font-bold text-emerald-400">{c.id}</TableCell>
+                  <TableCell className="font-semibold text-white">{c.nama_akun}</TableCell>
                   <TableCell className="text-center">
                     <span
-                      className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${
+                      className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${
                         c.tipe === 'DEBIT'
-                          ? 'bg-blue-100 text-blue-800'
-                          : 'bg-emerald-100 text-emerald-800'
+                          ? 'bg-blue-500/20 text-blue-300 border-blue-500/30'
+                          : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
                       }`}
                     >
                       {c.tipe}
@@ -234,3 +236,4 @@ export default function CoaSaldoPage() {
     </div>
   )
 }
+

@@ -28,23 +28,23 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-900 px-4 py-12 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900 via-slate-900 to-black text-slate-100">
+    <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-12 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-950/40 via-slate-950 to-black text-slate-100">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-600/20 border border-blue-500/30 text-blue-400 mb-2 shadow-lg backdrop-blur-xs">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mb-2 shadow-xl backdrop-blur-xs">
             <Building2 className="w-9 h-9" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
             Sistem Keuangan Lingkungan
           </h1>
-          <p className="text-sm text-slate-400">
-            Gereja St. Clara — Paroki Bekasi Utara
+          <p className="text-xs text-amber-300 font-semibold tracking-wide uppercase">
+            Gereja St. Clara • Paroki Bekasi Utara
           </p>
         </div>
 
-        <Card className="border-slate-800 bg-slate-950/80 backdrop-blur-md shadow-2xl text-slate-100">
+        <Card className="border-slate-800 bg-slate-900/90 backdrop-blur-md shadow-2xl text-slate-100">
           <CardHeader className="space-y-1 text-center border-b border-slate-800/80 pb-6">
-            <CardTitle className="text-xl font-semibold text-white">Masuk / Otomatis Buat Akun</CardTitle>
+            <CardTitle className="text-xl font-bold text-white">Masuk / Otomatis Buat Akun</CardTitle>
             <CardDescription className="text-slate-400">
               Pilih salah satu peran di bawah atau ketik email terdaftar
             </CardDescription>
@@ -53,7 +53,7 @@ export default function LoginPage() {
           <CardContent className="pt-6">
             <form action={login} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-300">Email Pengguna</Label>
+                <Label htmlFor="email" className="text-slate-300 font-medium">Email Pengguna</Label>
                 <Input
                   id="email"
                   name="email"
@@ -62,12 +62,12 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="m@example.com"
                   required
-                  className="bg-slate-900 border-slate-700 text-white placeholder:text-slate-500 focus:border-blue-500"
+                  className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-emerald-500"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-slate-300">Password</Label>
+                <Label htmlFor="password" className="text-slate-300 font-medium">Password</Label>
                 <Input
                   id="password"
                   name="password"
@@ -75,7 +75,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="bg-slate-900 border-slate-700 text-white focus:border-blue-500"
+                  className="bg-slate-800 border-slate-700 text-white focus:border-emerald-500"
                 />
               </div>
 
@@ -85,7 +85,7 @@ export default function LoginPage() {
                 </div>
               )}
 
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 transition shadow-lg shadow-blue-600/20">
+              <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 transition shadow-lg shadow-emerald-600/20 cursor-pointer">
                 <KeyRound className="w-4 h-4 mr-2" />
                 Masuk ke Aplikasi
               </Button>
@@ -105,8 +105,8 @@ export default function LoginPage() {
                 onClick={() => selectDemoAccount('bendahara@example.com')}
                 className={`p-2.5 rounded-lg border text-center transition ${
                   email === 'bendahara@example.com'
-                    ? 'bg-blue-950/80 border-blue-500 text-white ring-1 ring-blue-500'
-                    : 'bg-slate-900/90 border-slate-800 text-slate-300 hover:border-slate-700'
+                    ? 'bg-emerald-950/80 border-emerald-500 text-white ring-1 ring-emerald-500'
+                    : 'bg-slate-800/90 border-slate-700 text-slate-300 hover:border-slate-600'
                 }`}
               >
                 <span className="font-bold text-blue-400 block truncate">Bendahara</span>

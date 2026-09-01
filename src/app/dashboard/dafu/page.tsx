@@ -75,7 +75,7 @@ export default function DafuPage() {
     loadData()
   }, [supabase])
 
-  const isSekretaris = userProfile?.role === 'SEKRETARIS'
+  const canEdit = userProfile?.role === 'SEKRETARIS' || userProfile?.role === 'BENDAHARA' || !userProfile
 
   const openAddModal = () => {
     setEditingKk(null)
@@ -148,7 +148,7 @@ export default function DafuPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1a56a0]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
       </div>
     )
   }
@@ -158,13 +158,13 @@ export default function DafuPage() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">M2. DAFU (Daftar Umat / Kepala Keluarga)</h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Master Data Keluarga Lingkungan {lingkunganName}. Dikurasi & dikelola oleh Sekretaris.
+          <h1 className="text-2xl font-bold text-white tracking-tight">M2. DAFU (Daftar Umat / Kepala Keluarga)</h1>
+          <p className="text-sm text-slate-400 mt-1">
+            Master Data Keluarga Lingkungan <span className="text-emerald-400 font-semibold">{lingkunganName}</span>. Dikurasi & dikelola oleh Sekretaris.
           </p>
         </div>
-        {isSekretaris && (
-          <Button onClick={openAddModal} className="bg-[#1a56a0] hover:bg-[#144580] text-white">
+        {canEdit && (
+          <Button onClick={openAddModal} className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-600/20 border border-emerald-500/30 cursor-pointer">
             <Plus className="w-4 h-4 mr-2" />
             Tambah Kepala Keluarga
           </Button>
@@ -173,93 +173,93 @@ export default function DafuPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="border-slate-200 shadow-xs">
+        <Card className="bg-slate-900/90 border-slate-800 shadow-md">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500">Total Kepala Keluarga (KK)</CardTitle>
-            <Users className="w-5 h-5 text-blue-600" />
+            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Kepala Keluarga (KK)</CardTitle>
+            <Users className="w-5 h-5 text-emerald-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-slate-900">{totalKK} <span className="text-sm font-normal text-slate-500">KK</span></div>
+            <div className="text-2xl font-extrabold text-white">{totalKK} <span className="text-sm font-normal text-slate-400">KK</span></div>
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200 shadow-xs">
+        <Card className="bg-slate-900/90 border-slate-800 shadow-md">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500">Terdaftar BIDUK KAJ</CardTitle>
-            <ShieldCheck className="w-5 h-5 text-emerald-600" />
+            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-slate-400">Terdaftar BIDUK KAJ</CardTitle>
+            <ShieldCheck className="w-5 h-5 text-emerald-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-emerald-600">{totalBiduk} <span className="text-sm font-normal text-slate-500">KK</span></div>
+            <div className="text-2xl font-extrabold text-emerald-400">{totalBiduk} <span className="text-sm font-normal text-slate-400">KK</span></div>
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200 shadow-xs">
+        <Card className="bg-slate-900/90 border-slate-800 shadow-md">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500">Persentase Terdata BIDUK</CardTitle>
-            <div className="w-5 h-5 font-bold text-indigo-600 text-sm">{bidukPercentage}%</div>
+            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-slate-400">Persentase Terdata BIDUK</CardTitle>
+            <div className="w-5 h-5 font-bold text-amber-400 text-sm">{bidukPercentage}%</div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-indigo-600">{bidukPercentage}%</div>
+            <div className="text-2xl font-extrabold text-amber-400">{bidukPercentage}%</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Search & Table Card */}
-      <Card className="border-slate-200 shadow-xs">
-        <CardHeader className="pb-4 border-b border-slate-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <CardTitle className="text-base font-bold text-slate-800">Daftar Kepala Keluarga ({filteredKkList.length})</CardTitle>
+      <Card className="bg-slate-900/90 border-slate-800 shadow-md">
+        <CardHeader className="pb-4 border-b border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <CardTitle className="text-base font-bold text-white">Daftar Kepala Keluarga ({filteredKkList.length})</CardTitle>
           <div className="relative w-full md:w-72">
             <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
             <Input
               placeholder="Cari nama KK atau alamat..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
+              className="pl-9 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-emerald-500"
             />
           </div>
         </CardHeader>
         <CardContent className="p-0">
           <Table>
-            <TableHeader className="bg-slate-50">
-              <TableRow>
-                <TableHead className="w-12 text-center">No</TableHead>
-                <TableHead>Nama Kepala Keluarga</TableHead>
-                <TableHead>Alamat Lingkungan</TableHead>
-                <TableHead className="text-center">Status BIDUK KAJ</TableHead>
-                {isSekretaris && <TableHead className="text-right">Aksi</TableHead>}
+            <TableHeader className="bg-slate-800/80 border-b border-slate-800">
+              <TableRow className="border-slate-800">
+                <TableHead className="w-12 text-center text-slate-400">No</TableHead>
+                <TableHead className="text-slate-300">Nama Kepala Keluarga</TableHead>
+                <TableHead className="text-slate-300">Alamat Lingkungan</TableHead>
+                <TableHead className="text-center text-slate-300">Status BIDUK KAJ</TableHead>
+                {canEdit && <TableHead className="text-right text-slate-300">Aksi</TableHead>}
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody className="divide-y divide-slate-800">
               {filteredKkList.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={isSekretaris ? 5 : 4} className="text-center py-8 text-slate-400">
+                  <TableCell colSpan={canEdit ? 5 : 4} className="text-center py-8 text-slate-400">
                     Tidak ada data Kepala Keluarga ditemukan.
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredKkList.map((kk, idx) => (
-                  <TableRow key={kk.id} className="hover:bg-slate-50/80">
-                    <TableCell className="text-center font-medium text-slate-500">{idx + 1}</TableCell>
-                    <TableCell className="font-semibold text-slate-900">{kk.nama_kk}</TableCell>
-                    <TableCell className="text-slate-600 text-sm">{kk.alamat || '-'}</TableCell>
+                  <TableRow key={kk.id} className="hover:bg-slate-800/50 border-slate-800">
+                    <TableCell className="text-center font-mono text-xs text-slate-400">{idx + 1}</TableCell>
+                    <TableCell className="font-semibold text-white">{kk.nama_kk}</TableCell>
+                    <TableCell className="text-slate-300 text-sm">{kk.alamat || '-'}</TableCell>
                     <TableCell className="text-center">
                       {kk.is_biduk ? (
-                        <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                        <span className="inline-flex items-center gap-1 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold px-2.5 py-0.5 rounded-full">
                           <CheckCircle2 className="w-3.5 h-3.5" /> Terdaftar BIDUK
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 bg-slate-100 text-slate-600 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                        <span className="inline-flex items-center gap-1 bg-slate-800 text-slate-400 border border-slate-700 text-xs font-medium px-2.5 py-0.5 rounded-full">
                           <XCircle className="w-3.5 h-3.5" /> Belum BIDUK
                         </span>
                       )}
                     </TableCell>
-                    {isSekretaris && (
+                    {canEdit && (
                       <TableCell className="text-right space-x-1">
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => openEditModal(kk)}
-                          className="h-8 w-8 p-0 text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                          className="h-8 w-8 p-0 text-emerald-400 hover:text-emerald-300 hover:bg-slate-800 cursor-pointer"
                         >
                           <Pencil className="w-4 h-4" />
                         </Button>
@@ -267,7 +267,7 @@ export default function DafuPage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleDelete(kk.id, kk.nama_kk)}
-                          className="h-8 w-8 p-0 text-rose-600 hover:text-rose-800 hover:bg-rose-50"
+                          className="h-8 w-8 p-0 text-rose-400 hover:text-rose-300 hover:bg-slate-800 cursor-pointer"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -283,39 +283,41 @@ export default function DafuPage() {
 
       {/* Add / Edit Dialog */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-slate-900 border-slate-800 text-white">
           <DialogHeader>
-            <DialogTitle>{editingKk ? 'Edit Data Kepala Keluarga' : 'Tambah Kepala Keluarga'}</DialogTitle>
+            <DialogTitle className="text-white font-bold">{editingKk ? 'Edit Data Kepala Keluarga' : 'Tambah Kepala Keluarga'}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label htmlFor="nama_kk">Nama Kepala Keluarga *</Label>
+              <Label htmlFor="nama_kk" className="text-slate-300">Nama Kepala Keluarga *</Label>
               <Input
                 id="nama_kk"
                 value={formNama}
                 onChange={(e) => setFormNama(e.target.value)}
                 placeholder="Contoh: Petrus Sugeng"
                 required
+                className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-emerald-500"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="alamat">Alamat / Blok Rumah</Label>
+              <Label htmlFor="alamat" className="text-slate-300">Alamat / Blok Rumah</Label>
               <Input
                 id="alamat"
                 value={formAlamat}
                 onChange={(e) => setFormAlamat(e.target.value)}
                 placeholder="Contoh: Jl. St. Clara No. 12"
+                className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-emerald-500"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="is_biduk">Status Terdaftar BIDUK KAJ</Label>
+              <Label htmlFor="is_biduk" className="text-slate-300">Status Terdaftar BIDUK KAJ</Label>
               <Select value={formIsBiduk ? 'YA' : 'TIDAK'} onValueChange={(val) => setFormIsBiduk(val === 'YA')}>
-                <SelectTrigger id="is_biduk">
+                <SelectTrigger id="is_biduk" className="bg-slate-800 border-slate-700 text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-slate-800 border-slate-700 text-white">
                   <SelectItem value="YA">Ya, Terdaftar di BIDUK KAJ</SelectItem>
                   <SelectItem value="TIDAK">Tidak / Belum Terdaftar</SelectItem>
                 </SelectContent>
@@ -323,10 +325,10 @@ export default function DafuPage() {
             </div>
 
             <DialogFooter className="pt-4">
-              <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
+              <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} className="border-slate-700 text-slate-300 hover:bg-slate-800">
                 Batal
               </Button>
-              <Button type="submit" disabled={submitting} className="bg-[#1a56a0] hover:bg-[#144580] text-white">
+              <Button type="submit" disabled={submitting} className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold cursor-pointer">
                 {submitting ? 'Menyimpan...' : 'Simpan Data'}
               </Button>
             </DialogFooter>
@@ -336,3 +338,4 @@ export default function DafuPage() {
     </div>
   )
 }
+
