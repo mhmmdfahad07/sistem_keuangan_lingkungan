@@ -90,22 +90,28 @@ export const Sidebar: React.FC<SidebarProps> = ({ userRole = 'BENDAHARA' }) => {
   })
 
   return (
-    <aside className="w-64 bg-slate-900 text-slate-300 p-4 border-r border-slate-800 shrink-0 flex flex-col justify-between h-full shadow-2xl">
+    <aside className="w-64 bg-[#090d16] text-slate-300 p-4 border-r border-slate-800 shrink-0 flex flex-col justify-between h-full shadow-2xl">
       <div className="flex flex-col gap-4 overflow-y-auto no-scrollbar">
-        {/* Parish Badge & Role Header */}
-        <div className="bg-gradient-to-br from-slate-800 to-slate-800/90 rounded-2xl p-3 border border-slate-700/80 shadow-md">
-          <div className="flex items-center gap-2.5 mb-2.5 pb-2.5 border-b border-slate-700/60">
-            <div className="w-8 h-8 rounded-full bg-emerald-600 border border-amber-400/50 flex items-center justify-center text-white font-bold text-xs shrink-0">
-              SC
-            </div>
-            <div className="min-w-0">
-              <div className="text-xs font-bold text-white truncate">Paroki Bekasi Utara</div>
-              <div className="text-[10px] text-amber-300 font-medium truncate">Gereja St. Clara</div>
-            </div>
+        {/* Brand Header with St. Clara Official Logo */}
+        <div className="flex items-center gap-3 px-1 py-1">
+          <img
+            src="/logo-st-clara.jpg"
+            alt="Logo Gereja Santa Clara"
+            className="w-10 h-10 rounded-full object-cover border border-slate-700 bg-white shrink-0 shadow-sm"
+          />
+          <div className="min-w-0">
+            <div className="text-sm font-extrabold text-white tracking-wide truncate uppercase">SICLAR</div>
+            <div className="text-[11px] text-slate-400 font-medium truncate">Keuangan Lingkungan</div>
           </div>
+        </div>
+
+        {/* Parish Badge & Role Header Card */}
+        <div className="bg-slate-800/80 rounded-2xl p-3.5 border border-slate-700/80 shadow-md">
+          <div className="text-xs font-bold text-white truncate">Paroki Bekasi Utara</div>
+          <div className="text-[11px] text-slate-400 font-medium truncate mb-2">Bekasi Utara</div>
 
           <div className="text-[10px] uppercase tracking-wider font-bold text-slate-400">
-            Hak Akses Role:
+            HAK AKSES ROLE:
           </div>
           <div className="text-xs font-bold text-white mt-0.5 flex items-center justify-between gap-1">
             <span className="truncate">
@@ -128,8 +134,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ userRole = 'BENDAHARA' }) => {
 
         {/* Navigation Items */}
         <nav className="flex flex-col gap-1.5">
-          <div className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-            Menu Modul Keuangan
+          <div className="px-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+            MENU UTAMA
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -143,12 +149,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ userRole = 'BENDAHARA' }) => {
                   href={item.href}
                   className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
                     isActive
-                      ? 'bg-emerald-600 text-white shadow-md font-bold'
-                      : 'text-slate-300 hover:bg-slate-800 hover:text-white bg-slate-800/40'
+                      ? 'bg-slate-800 text-white font-bold border-l-4 border-amber-400 rounded-l-none pl-2.5 shadow-md'
+                      : 'text-slate-300 hover:bg-slate-800/60 hover:text-white'
                   }`}
                 >
                   <div className="flex items-center gap-2.5 truncate">
-                    <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-emerald-400/80'}`} />
+                    <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-amber-400' : 'text-slate-400'}`} />
                     <span className="truncate">{item.title}</span>
                   </div>
 
@@ -156,7 +162,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ userRole = 'BENDAHARA' }) => {
                     <span
                       className={`text-[9px] px-1.5 py-0.5 rounded font-bold shrink-0 ${
                         isActive
-                          ? 'bg-white/20 text-white'
+                          ? 'bg-amber-400/20 text-amber-300 border border-amber-400/30'
                           : 'bg-slate-800 text-slate-400 border border-slate-700'
                       }`}
                     >
@@ -171,10 +177,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ userRole = 'BENDAHARA' }) => {
       </div>
 
       <div className="pt-4 border-t border-slate-800 text-[11px] text-slate-400 flex items-center gap-2 mt-auto">
-        <Building2 className="w-4 h-4 text-emerald-400 shrink-0" />
+        <Building2 className="w-4 h-4 text-amber-400 shrink-0" />
         <span className="truncate">Gereja St. Clara • v1.1</span>
       </div>
     </aside>
   )
 }
+
 

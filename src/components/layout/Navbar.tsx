@@ -60,15 +60,15 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="w-full px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
         {/* Brand logo & title */}
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-10 h-10 rounded-full p-0.5 bg-gradient-to-tr from-amber-400 via-emerald-500 to-teal-400 shadow-md shrink-0 flex items-center justify-center">
-            <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center font-extrabold text-xs text-white">
-              SC
-            </div>
-          </div>
+          <img
+            src="/logo-st-clara.jpg"
+            alt="Logo St. Clara"
+            className="w-10 h-10 rounded-full object-cover border border-amber-400/50 bg-white shrink-0 shadow-md"
+          />
           <div className="min-w-0">
             <h1 className="font-bold text-sm sm:text-base tracking-tight text-white flex items-center gap-2 truncate">
               Sistem Keuangan Lingkungan
-              <span className="text-[10px] font-semibold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded hidden xs:inline-block">
+              <span className="text-[10px] font-semibold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30 px-1.5 py-0.5 rounded hidden xs:inline-block">
                 v1.1
               </span>
             </h1>
@@ -82,7 +82,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center gap-3">
           {/* Lingkungan Scope Indicator / Selector */}
           <div className="flex items-center space-x-2 bg-slate-800/90 border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-slate-200 shadow-xs">
-            <Building2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <Building2 className="w-4 h-4 text-amber-400 shrink-0" />
             {userProfile?.role === 'PAROKI' ? (
               <Select value={selectedLingkunganId || ''} onValueChange={(val) => val && onLingkunganChange(val)}>
                 <SelectTrigger className="h-6 border-none bg-transparent shadow-none focus:ring-0 text-xs font-medium p-0 text-white gap-1">
@@ -109,7 +109,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={() => setShowProfileMenu(!showProfileMenu)}
               className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700/80 p-1.5 pr-3 rounded-xl border border-slate-700/80 transition-colors cursor-pointer"
             >
-              <div className="w-8 h-8 rounded-lg bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 font-bold flex items-center justify-center text-xs shrink-0">
+              <div className="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-300 font-bold flex items-center justify-center text-xs shrink-0">
                 {userProfile?.email ? userProfile.email.charAt(0).toUpperCase() : 'U'}
               </div>
               <div className="text-left hidden md:block">

@@ -155,11 +155,11 @@ export default function DashboardOverviewPage() {
       {/* Header Banner */}
       <div className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full p-0.5 bg-gradient-to-tr from-amber-400 via-emerald-500 to-teal-400 shadow-md shrink-0 flex items-center justify-center">
-            <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center font-extrabold text-xs text-white">
-              SC
-            </div>
-          </div>
+          <img
+            src="/logo-st-clara.jpg"
+            alt="Logo St. Clara"
+            className="w-12 h-12 rounded-full object-cover border border-amber-400/50 bg-white shrink-0 shadow-md"
+          />
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-md border border-amber-200">

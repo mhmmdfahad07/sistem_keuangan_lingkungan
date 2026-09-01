@@ -31,8 +31,12 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-slate-900 px-4 py-12 text-slate-900">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-slate-800 border border-slate-700 text-amber-400 mb-2 shadow-xl">
-            <Building2 className="w-9 h-9" />
+          <div className="inline-flex items-center justify-center mb-2">
+            <img
+              src="/logo-st-clara.jpg"
+              alt="Logo St. Clara"
+              className="w-20 h-20 rounded-full object-cover border-2 border-amber-400/60 bg-white shadow-2xl"
+            />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
             Sistem Keuangan Lingkungan
