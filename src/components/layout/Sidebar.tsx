@@ -33,47 +33,43 @@ export const Sidebar: React.FC<SidebarProps> = ({ userRole = 'BENDAHARA' }) => {
       roles: ['BENDAHARA', 'PAROKI'],
     },
     {
-      title: 'M1. Daftar Isian',
+      title: 'Daftar Isian',
       href: '/dashboard/daftar-isian',
       icon: ClipboardEdit,
       roles: ['BENDAHARA', 'PAROKI'],
-      badge: 'Edit C',
     },
     {
-      title: 'M2. DAFU (Daftar Umat)',
+      title: 'DAFU (Daftar Umat)',
       href: '/dashboard/dafu',
       icon: Users,
       roles: ['BENDAHARA', 'SEKRETARIS', 'PAROKI'],
-      badge: userRole === 'SEKRETARIS' ? 'Input' : 'View',
     },
     {
-      title: 'M3. COA & Saldo Awal',
+      title: 'COA & Saldo Awal',
       href: '/dashboard/coa-saldo',
       icon: BookOpen,
       roles: ['BENDAHARA', 'PAROKI'],
     },
     {
-      title: 'M4. Jurnal Transaksi',
+      title: 'Jurnal Transaksi',
       href: '/dashboard/jurnal',
       icon: Receipt,
       roles: ['BENDAHARA', 'PAROKI'],
-      badge: userRole === 'BENDAHARA' ? 'Input' : 'View',
     },
     {
-      title: 'M5. Laporan Aktivitas',
+      title: 'Laporan Aktivitas',
       href: '/dashboard/laporan',
       icon: FileSpreadsheet,
       roles: ['BENDAHARA', 'PAROKI'],
     },
     {
-      title: 'M6. Daftar Aset',
+      title: 'Daftar Aset',
       href: '/dashboard/aset',
       icon: Package,
       roles: ['BENDAHARA', 'PAROKI'],
-      badge: userRole === 'BENDAHARA' ? 'CRUD' : 'View',
     },
     {
-      title: 'M7. Kartu Setoran',
+      title: 'Kartu Setoran',
       href: '/dashboard/kartu-setoran',
       icon: CreditCard,
       roles: ['BENDAHARA', 'PAROKI'],
@@ -157,18 +153,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ userRole = 'BENDAHARA' }) => {
                     <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-[#A9834F]' : 'text-[#8A90A3]'}`} />
                     <span className="truncate font-serif">{item.title}</span>
                   </div>
-
-                  {item.badge && userRole !== 'SEKRETARIS' && (
-                    <span
-                      className={`text-[9px] px-1.5 py-0.5 rounded font-bold shrink-0 ${
-                        isActive
-                          ? 'bg-[#A9834F]/20 text-[#A9834F] border border-[#A9834F]/30'
-                          : 'bg-[#22335A] text-[#8A90A3] border border-[#2C3E66]'
-                      }`}
-                    >
-                      {item.badge}
-                    </span>
-                  )}
                 </Link>
               )
             })}
