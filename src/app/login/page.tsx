@@ -6,11 +6,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { KeyRound } from 'lucide-react'
+import { KeyRound, Eye, EyeOff } from 'lucide-react'
 
 export default function LoginPage() {
   const [username, setUsername] = useState('bendahara')
   const [password, setPassword] = useState('password123')
+  const [showPassword, setShowPassword] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
 
   // Read URL query param message if present on client
@@ -71,16 +72,30 @@ export default function LoginPage() {
 
               <div className="space-y-1.5">
                 <Label htmlFor="password" className="text-xs font-semibold text-[#1B2130]">Password</Label>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  placeholder="Masukkan Password"
-                  className="h-11 bg-white border-[#D3D7E0] text-[#1B2130] rounded-lg focus:ring-[#A9834F] focus:border-[#A9834F] text-sm font-medium"
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    placeholder="Masukkan Password"
+                    className="h-11 bg-white border-[#D3D7E0] text-[#1B2130] rounded-lg focus:ring-[#A9834F] focus:border-[#A9834F] text-sm font-medium pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8A90A3] hover:text-[#1B2130] transition-colors p-1 cursor-pointer"
+                    title={showPassword ? 'Sembunyikan Password' : 'Tampilkan Password'}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
               </div>
 
               {message && (

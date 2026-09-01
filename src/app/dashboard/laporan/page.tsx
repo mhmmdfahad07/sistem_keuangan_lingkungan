@@ -357,12 +357,12 @@ export default function LaporanPage() {
           </div>
 
           {/* Section 3: Surplus / Defisit & Saldo Akhir */}
-          <div className="p-5 rounded-[10px] bg-white border border-[#E3E6EC] shadow-xs space-y-4">
-            <div className="flex justify-between items-center text-sm">
+          <div className="p-4 rounded-[10px] bg-white border border-[#E3E6EC] shadow-xs space-y-3">
+            <div className="flex justify-between items-center text-xs sm:text-sm">
               <span className="font-bold text-[#1B2130] uppercase tracking-wide">
                 SURPLUS / (DEFISIT) BULANAN (I - II):
               </span>
-              <span className={`text-base font-extrabold px-3 py-1 rounded-[6px] border ${
+              <span className={`text-sm font-bold px-3 py-1 rounded-[6px] border ${
                 surplusDefisit >= 0
                   ? 'text-[#2F7A54] bg-[#E7F3EC] border-[#2F7A54]/20'
                   : 'text-rose-700 bg-rose-50 border-rose-200'
@@ -371,16 +371,16 @@ export default function LaporanPage() {
               </span>
             </div>
 
-            <div className="border-t border-[#E3E6EC] pt-3.5 flex justify-between items-center">
+            <div className="border-t border-[#E3E6EC] pt-3 flex justify-between items-center text-xs sm:text-sm">
               <div>
-                <span className="font-extrabold text-[#1B2130] text-base font-serif block">
+                <span className="font-bold text-[#1B2130] font-serif block">
                   SALDO KAS / BANK AKHIR KELOLAAN:
                 </span>
-                <span className="text-xs text-[#5C6478]">
+                <span className="text-[11px] text-[#5C6478]">
                   (Saldo Awal + Total Penerimaan - Total Pengeluaran)
                 </span>
               </div>
-              <span className="text-xl font-extrabold text-[#16233F] bg-[#F0F1F5] border border-[#D3D7E0] px-4 py-2 rounded-[8px] font-mono shadow-xs">
+              <span className="text-sm font-bold text-[#1B2130] bg-[#F0F1F5] border border-[#D3D7E0] px-3.5 py-1.5 rounded-[6px] font-mono shadow-xs">
                 {formatRupiah(saldoAkhir)}
               </span>
             </div>

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
-import { UserProfile, KepalaKeluarga, ProfilLingkungan } from '@/lib/types'
+import { UserRole, UserProfile, KepalaKeluarga, ProfilLingkungan } from '@/lib/types'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -50,6 +50,20 @@ export default function DaftarIsianPage() {
         if (user) {
           const { data: uData } = await supabase.from('users').select('*').eq('id', user.id).maybeSingle()
           if (uData) setUserProfile(uData)
+        } else {
+          const cookies = document.cookie
+          let currentRole: UserRole = 'BENDAHARA'
+          if (cookies.includes('demo_user_role=SEKRETARIS') || cookies.includes('sekretaris')) {
+            currentRole = 'SEKRETARIS'
+          } else if (cookies.includes('demo_user_role=PAROKI') || cookies.includes('paroki')) {
+            currentRole = 'PAROKI'
+          }
+          setUserProfile({
+            id: 'demo-user',
+            email: `${currentRole.toLowerCase()}@example.com`,
+            role: currentRole,
+            lingkungan_id: null,
+          })
         }
 
         let targetLingkunganId = localStorage.getItem('selected_lingkungan_id')
@@ -169,9 +183,10 @@ export default function DaftarIsianPage() {
     }
   }
 
-  const isSekretarisOrAdmin = userProfile?.role === 'SEKRETARIS' || userProfile?.role === 'BENDAHARA'
-  const isSekretarisEditable = userProfile?.role === 'SEKRETARIS'
-  const isBendaharaEditable = userProfile?.role === 'BENDAHARA'
+  const userRole = userProfile?.role || 'BENDAHARA'
+  const isSekretarisOrAdmin = userRole === 'SEKRETARIS' || userRole === 'BENDAHARA'
+  const isSekretarisEditable = userRole === 'SEKRETARIS' || userRole === 'BENDAHARA'
+  const isBendaharaEditable = userRole === 'BENDAHARA'
 
   if (loading) {
     return (
@@ -216,9 +231,13 @@ export default function DaftarIsianPage() {
               </CardTitle>
               <CardDescription className="text-slate-500">Dikelola & diisi oleh Sekretaris Lingkungan</CardDescription>
             </div>
-            {!isSekretarisEditable && (
+            {isSekretarisEditable ? (
+              <span className="text-xs bg-[#E7F3EC] text-[#2F7A54] border border-[#2F7A54]/20 px-2.5 py-1 rounded-md flex items-center gap-1 font-bold">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#2F7A54]" /> Akses Input (Sekretaris)
+              </span>
+            ) : (
               <span className="text-xs bg-purple-100 text-purple-800 border border-purple-200 px-2.5 py-1 rounded-md flex items-center gap-1 font-bold">
-                <Lock className="w-3.5 h-3.5 text-purple-600" /> Read Only (Sekretaris)
+                <Lock className="w-3.5 h-3.5 text-purple-600" /> Read Only (Pengawas Paroki)
               </span>
             )}
           </CardHeader>
@@ -272,9 +291,13 @@ export default function DaftarIsianPage() {
               </CardTitle>
               <CardDescription className="text-slate-500">Dikelola & diisi oleh Sekretaris Lingkungan</CardDescription>
             </div>
-            {!isSekretarisEditable && (
+            {isSekretarisEditable ? (
+              <span className="text-xs bg-[#E7F3EC] text-[#2F7A54] border border-[#2F7A54]/20 px-2.5 py-1 rounded-md flex items-center gap-1 font-bold">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#2F7A54]" /> Akses Input (Sekretaris)
+              </span>
+            ) : (
               <span className="text-xs bg-purple-100 text-purple-800 border border-purple-200 px-2.5 py-1 rounded-md flex items-center gap-1 font-bold">
-                <Lock className="w-3.5 h-3.5 text-purple-600" /> Read Only (Sekretaris)
+                <Lock className="w-3.5 h-3.5 text-purple-600" /> Read Only (Pengawas Paroki)
               </span>
             )}
           </CardHeader>
@@ -378,9 +401,17 @@ export default function DaftarIsianPage() {
               </CardTitle>
               <CardDescription className="text-slate-500">Dikelola & diisi oleh Bendahara Lingkungan</CardDescription>
             </div>
-            {!isBendaharaEditable && (
+            {isBendaharaEditable ? (
+              <span className="text-xs bg-[#E7F3EC] text-[#2F7A54] border border-[#2F7A54]/20 px-2.5 py-1 rounded-md flex items-center gap-1 font-bold">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#2F7A54]" /> Akses Input (Bendahara)
+              </span>
+            ) : userRole === 'SEKRETARIS' ? (
               <span className="text-xs bg-amber-100 text-amber-800 border border-amber-200 px-2.5 py-1 rounded-md flex items-center gap-1 font-bold">
-                <Lock className="w-3.5 h-3.5 text-amber-600" /> Read Only (Bendahara)
+                <Lock className="w-3.5 h-3.5 text-amber-600" /> Khusus Pembukuan Bendahara
+              </span>
+            ) : (
+              <span className="text-xs bg-purple-100 text-purple-800 border border-purple-200 px-2.5 py-1 rounded-md flex items-center gap-1 font-bold">
+                <Lock className="w-3.5 h-3.5 text-purple-600" /> Read Only (Pengawas Paroki)
               </span>
             )}
           </CardHeader>

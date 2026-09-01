@@ -61,11 +61,28 @@ export async function login(formData: FormData) {
     console.log('Supabase Auth connection error:', err?.message)
   }
 
-  // 3. Fallback Demo Session Mode if Supabase Key is unconfigured or fetch failed
-  const cookieStore = await cookies()
-  cookieStore.set('demo_user_email', email)
-  cookieStore.set('demo_user_role', role)
+  // Define valid accounts for demo mode if Supabase auth is offline
+  const validDemoUsers: Record<string, string> = {
+    'bendahara': 'password123',
+    'bendahara@example.com': 'password123',
+    'sekretaris': 'password123',
+    'sekretaris@example.com': 'password123',
+    'paroki': 'password123',
+    'paroki@example.com': 'password123',
+  }
 
-  revalidatePath('/', 'layout')
-  redirect('/dashboard')
+  const cleanUserKey = usernameInput.trim().toLowerCase()
+  const expectedPassword = validDemoUsers[cleanUserKey]
+
+  if (expectedPassword && password === expectedPassword) {
+    const cookieStore = await cookies()
+    cookieStore.set('demo_user_email', email)
+    cookieStore.set('demo_user_role', role)
+
+    revalidatePath('/', 'layout')
+    redirect('/dashboard')
+  }
+
+  // If both Supabase auth & demo user validation failed: reject invalid login
+  redirect('/login?message=Username atau password yang Anda masukkan salah')
 }
