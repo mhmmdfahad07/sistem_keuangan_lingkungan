@@ -43,73 +43,75 @@ export default function DaftarIsianPage() {
   useEffect(() => {
     async function loadData() {
       setLoading(true)
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+      try {
+        const { data } = await supabase.auth.getUser()
+        const user = data?.user
 
-      let userProf: UserProfile | null = null
-      const { data: uData } = await supabase.from('users').select('*').eq('id', user.id).single()
-      if (uData) {
-        userProf = uData
-        setUserProfile(uData)
-      }
-
-      let targetLingkunganId = localStorage.getItem('selected_lingkungan_id') || uData?.lingkungan_id || null
-      if (!targetLingkunganId) {
-        const { data: lData } = await supabase.from('lingkungan').select('id, nama_lingkungan').limit(1).single()
-        if (lData) {
-          targetLingkunganId = lData.id
-          setNamaLingkungan(lData.nama_lingkungan)
+        if (user) {
+          const { data: uData } = await supabase.from('users').select('*').eq('id', user.id).maybeSingle()
+          if (uData) setUserProfile(uData)
         }
-      } else {
-        const { data: lData } = await supabase.from('lingkungan').select('nama_lingkungan').eq('id', targetLingkunganId).single()
-        if (lData) setNamaLingkungan(lData.nama_lingkungan)
-      }
 
-      setLingkunganId(targetLingkunganId)
+        let targetLingkunganId = localStorage.getItem('selected_lingkungan_id')
+        if (!targetLingkunganId) {
+          const { data: lData } = await supabase.from('lingkungan').select('id, nama_lingkungan').limit(1).maybeSingle()
+          if (lData) {
+            targetLingkunganId = lData.id
+            setNamaLingkungan(lData.nama_lingkungan)
+          }
+        } else {
+          const { data: lData } = await supabase.from('lingkungan').select('nama_lingkungan').eq('id', targetLingkunganId).maybeSingle()
+          if (lData) setNamaLingkungan(lData.nama_lingkungan)
+        }
 
-      if (targetLingkunganId) {
-        // Load KK list for droplists
-        const { data: kks } = await supabase
-          .from('kepala_keluarga')
-          .select('*')
-          .eq('lingkungan_id', targetLingkunganId)
-          .order('nama_kk', { ascending: true })
+        setLingkunganId(targetLingkunganId)
 
-        if (kks) setKkList(kks)
+        if (targetLingkunganId) {
+          // Load KK list for droplists
+          const { data: kks } = await supabase
+            .from('kepala_keluarga')
+            .select('*')
+            .eq('lingkungan_id', targetLingkunganId)
+            .order('nama_kk', { ascending: true })
 
-        // Load Profil Lingkungan
-        const { data: profil } = await supabase
-          .from('profil_lingkungan')
-          .select('*')
-          .eq('lingkungan_id', targetLingkunganId)
-          .maybeSingle()
+          if (kks) setKkList(kks)
 
-        if (profil) {
-          setProfilId(profil.id)
-          setKetuaId(profil.ketua_id || '')
-          setSekretarisId(profil.sekretaris_id || '')
-          setBendaharaId(profil.bendahara_id || '')
-          setTeleponBendahara(profil.telepon_bendahara || '')
-          setPeriodeMasaBakti(profil.periode_masa_bakti || '2024-2026')
-          setIsHubKerabat(!!profil.is_hub_kerabat)
-          setIsBendaharaKaj(!!profil.is_bendahara_kaj)
+          // Load Profil Lingkungan
+          const { data: profil } = await supabase
+            .from('profil_lingkungan')
+            .select('*')
+            .eq('lingkungan_id', targetLingkunganId)
+            .maybeSingle()
 
-          setJenisRekening(profil.jenis_rekening || 'Tabungan')
-          setNamaBank(profil.nama_bank || 'BCA')
-          setNoRekening(profil.no_rekening || '')
-          setTahunBuku(profil.tahun_buku || '2026')
-          setBulanSaldo(profil.bulan_saldo || 1)
-          setSaldoAwal(Number(profil.saldo_awal || 0))
+          if (profil) {
+            setProfilId(profil.id)
+            setKetuaId(profil.ketua_id || '')
+            setSekretarisId(profil.sekretaris_id || '')
+            setBendaharaId(profil.bendahara_id || '')
+            setTeleponBendahara(profil.telepon_bendahara || '')
+            setPeriodeMasaBakti(profil.periode_masa_bakti || '2024-2026')
+            setIsHubKerabat(!!profil.is_hub_kerabat)
+            setIsBendaharaKaj(!!profil.is_bendahara_kaj)
 
-          // Auto-fill bendahara address if bendahara_id exists
-          if (profil.bendahara_id && kks) {
-            const b = kks.find(x => x.id === profil.bendahara_id)
-            setAlamatBendahara(b?.alamat || '')
+            setJenisRekening(profil.jenis_rekening || 'Tabungan')
+            setNamaBank(profil.nama_bank || 'BCA')
+            setNoRekening(profil.no_rekening || '')
+            setTahunBuku(profil.tahun_buku || '2026')
+            setBulanSaldo(profil.bulan_saldo || 1)
+            setSaldoAwal(Number(profil.saldo_awal || 0))
+
+            // Auto-fill bendahara address if bendahara_id exists
+            if (profil.bendahara_id && kks) {
+              const b = kks.find(x => x.id === profil.bendahara_id)
+              setAlamatBendahara(b?.alamat || '')
+            }
           }
         }
+      } catch (err) {
+        console.error('Error loading daftar isian:', err)
+      } finally {
+        setLoading(false)
       }
-
-      setLoading(false)
     }
 
     loadData()

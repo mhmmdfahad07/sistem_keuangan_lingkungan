@@ -29,52 +29,58 @@ export default function CoaSaldoPage() {
   useEffect(() => {
     async function loadData() {
       setLoading(true)
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+      try {
+        const { data } = await supabase.auth.getUser()
+        const user = data?.user
 
-      const { data: uData } = await supabase.from('users').select('*').eq('id', user.id).single()
-      if (uData) setUserProfile(uData)
-
-      let targetLingkunganId = localStorage.getItem('selected_lingkungan_id') || uData?.lingkungan_id || null
-      if (!targetLingkunganId) {
-        const { data: lData } = await supabase.from('lingkungan').select('id').limit(1).single()
-        if (lData) targetLingkunganId = lData.id
-      }
-
-      setLingkunganId(targetLingkunganId)
-
-      // Fetch COA master data
-      const { data: coas } = await supabase.from('coa').select('*').order('id', { ascending: true })
-      if (coas) setCoaList(coas)
-
-      if (targetLingkunganId) {
-        // Fetch Profil Lingkungan Saldo
-        const { data: profil } = await supabase
-          .from('profil_lingkungan')
-          .select('*')
-          .eq('lingkungan_id', targetLingkunganId)
-          .maybeSingle()
-
-        if (profil) {
-          setProfilId(profil.id)
-          setSaldoAwal(Number(profil.saldo_awal || 0))
-          setTahunBuku(profil.tahun_buku || '2026')
+        if (user) {
+          const { data: uData } = await supabase.from('users').select('*').eq('id', user.id).maybeSingle()
+          if (uData) setUserProfile(uData)
         }
 
-        // Check if any journal month is posted/locked
-        const { data: postedJurnals } = await supabase
-          .from('jurnal_transaksi')
-          .select('id')
-          .eq('lingkungan_id', targetLingkunganId)
-          .eq('is_posted', true)
-          .limit(1)
-
-        if (postedJurnals && postedJurnals.length > 0) {
-          setIsLocked(true)
+        let targetLingkunganId = localStorage.getItem('selected_lingkungan_id')
+        if (!targetLingkunganId) {
+          const { data: lData } = await supabase.from('lingkungan').select('id').limit(1).maybeSingle()
+          if (lData) targetLingkunganId = lData.id
         }
-      }
 
-      setLoading(false)
+        setLingkunganId(targetLingkunganId)
+
+        // Fetch COA master data
+        const { data: coas } = await supabase.from('coa').select('*').order('id', { ascending: true })
+        if (coas) setCoaList(coas)
+
+        if (targetLingkunganId) {
+          // Fetch Profil Lingkungan Saldo
+          const { data: profil } = await supabase
+            .from('profil_lingkungan')
+            .select('*')
+            .eq('lingkungan_id', targetLingkunganId)
+            .maybeSingle()
+
+          if (profil) {
+            setProfilId(profil.id)
+            setSaldoAwal(Number(profil.saldo_awal || 0))
+            setTahunBuku(profil.tahun_buku || '2026')
+          }
+
+          // Check if any journal month is posted/locked
+          const { data: postedJurnals } = await supabase
+            .from('jurnal_transaksi')
+            .select('is_posted')
+            .eq('lingkungan_id', targetLingkunganId)
+            .eq('is_posted', true)
+            .limit(1)
+
+          if (postedJurnals && postedJurnals.length > 0) {
+            setIsLocked(true)
+          }
+        }
+      } catch (err) {
+        console.error('Error loading coa saldo:', err)
+      } finally {
+        setLoading(false)
+      }
     }
 
     loadData()

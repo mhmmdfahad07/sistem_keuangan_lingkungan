@@ -34,47 +34,50 @@ export default function KartuSetoranPage() {
   useEffect(() => {
     async function loadData() {
       setLoading(true)
-
-      let targetLingkunganId = localStorage.getItem('selected_lingkungan_id')
-      if (!targetLingkunganId) {
-        const { data: uData } = await supabase.from('users').select('lingkungan_id').limit(1).single()
-        targetLingkunganId = uData?.lingkungan_id || null
-      }
-
-      if (!targetLingkunganId) {
-        const { data: lData } = await supabase.from('lingkungan').select('id, nama_lingkungan').limit(1).single()
-        if (lData) {
-          targetLingkunganId = lData.id
-          setLingkunganName(lData.nama_lingkungan)
+      try {
+        let targetLingkunganId = localStorage.getItem('selected_lingkungan_id')
+        if (!targetLingkunganId) {
+          const { data: uData } = await supabase.from('users').select('lingkungan_id').limit(1).maybeSingle()
+          targetLingkunganId = uData?.lingkungan_id || null
         }
-      } else {
-        const { data: lData } = await supabase.from('lingkungan').select('nama_lingkungan').eq('id', targetLingkunganId).single()
-        if (lData) setLingkunganName(lData.nama_lingkungan)
+
+        if (!targetLingkunganId) {
+          const { data: lData } = await supabase.from('lingkungan').select('id, nama_lingkungan').limit(1).maybeSingle()
+          if (lData) {
+            targetLingkunganId = lData.id
+            setLingkunganName(lData.nama_lingkungan)
+          }
+        } else {
+          const { data: lData } = await supabase.from('lingkungan').select('nama_lingkungan').eq('id', targetLingkunganId).maybeSingle()
+          if (lData) setLingkunganName(lData.nama_lingkungan)
+        }
+
+        setLingkunganId(targetLingkunganId)
+
+        if (targetLingkunganId) {
+          // Fetch KK list
+          const { data: kks } = await supabase
+            .from('kepala_keluarga')
+            .select('*')
+            .eq('lingkungan_id', targetLingkunganId)
+            .order('nama_kk', { ascending: true })
+
+          if (kks) setKkList(kks)
+
+          // Fetch Journals
+          const { data: journals } = await supabase
+            .from('jurnal_transaksi')
+            .select('*')
+            .eq('lingkungan_id', targetLingkunganId)
+            .eq('tipe_arus', 'MASUK')
+
+          if (journals) setJurnalList(journals)
+        }
+      } catch (err) {
+        console.error('Error loading kartu setoran:', err)
+      } finally {
+        setLoading(false)
       }
-
-      setLingkunganId(targetLingkunganId)
-
-      if (targetLingkunganId) {
-        // Fetch KK list
-        const { data: kks } = await supabase
-          .from('kepala_keluarga')
-          .select('*')
-          .eq('lingkungan_id', targetLingkunganId)
-          .order('nama_kk', { ascending: true })
-
-        if (kks) setKkList(kks)
-
-        // Fetch Journals
-        const { data: journals } = await supabase
-          .from('jurnal_transaksi')
-          .select('*')
-          .eq('lingkungan_id', targetLingkunganId)
-          .eq('tipe_arus', 'MASUK')
-
-        if (journals) setJurnalList(journals)
-      }
-
-      setLoading(false)
     }
 
     loadData()

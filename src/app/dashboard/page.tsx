@@ -37,85 +37,89 @@ export default function DashboardOverviewPage() {
     async function loadDashboardData() {
       setLoading(true)
 
-      // Get user session & scope
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+      try {
+        // Get user session & scope
+        const { data } = await supabase.auth.getUser()
+        const user = data?.user
 
-      let targetLingkunganId = localStorage.getItem('selected_lingkungan_id')
-      if (!targetLingkunganId) {
-        const { data: uData } = await supabase.from('users').select('lingkungan_id').eq('id', user.id).single()
-        targetLingkunganId = uData?.lingkungan_id || null
+        let targetLingkunganId = localStorage.getItem('selected_lingkungan_id')
+        if (!targetLingkunganId && user) {
+          const { data: uData } = await supabase.from('users').select('lingkungan_id').eq('id', user.id).maybeSingle()
+          targetLingkunganId = uData?.lingkungan_id || null
+        }
+
+        if (!targetLingkunganId) {
+          // Fallback to first lingkungan
+          const { data: lData } = await supabase.from('lingkungan').select('id, nama_lingkungan').limit(1).maybeSingle()
+          if (lData) {
+            targetLingkunganId = lData.id
+            setLingkunganName(lData.nama_lingkungan)
+          }
+        } else {
+          const { data: lData } = await supabase.from('lingkungan').select('nama_lingkungan').eq('id', targetLingkunganId).maybeSingle()
+          if (lData) setLingkunganName(lData.nama_lingkungan)
+        }
+
+        setLingkunganId(targetLingkunganId)
+
+        if (targetLingkunganId) {
+          // 1. Fetch Profil Lingkungan Saldo Awal
+          const { data: profil } = await supabase
+            .from('profil_lingkungan')
+            .select('saldo_awal')
+            .eq('lingkungan_id', targetLingkunganId)
+            .maybeSingle()
+
+          const sa = Number(profil?.saldo_awal || 0)
+          setSaldoAwal(sa)
+
+          // 2. Fetch Journal Transactions
+          const { data: journals } = await supabase
+            .from('jurnal_transaksi')
+            .select('*, kepala_keluarga:kk_id(nama_kk)')
+            .eq('lingkungan_id', targetLingkunganId)
+            .order('tanggal', { ascending: false })
+
+          if (journals) {
+            let masuk = 0
+            let keluar = 0
+            journals.forEach((j) => {
+              const nom = Number(j.nominal) || 0
+              if (j.tipe_arus === 'MASUK') masuk += nom
+              else keluar += nom
+            })
+            setTotalKasMasuk(masuk)
+            setTotalKasKeluar(keluar)
+            setRecentTransactions(journals.slice(0, 5))
+          }
+
+          // 3. Fetch DAFU (KK)
+          const { data: kks } = await supabase
+            .from('kepala_keluarga')
+            .select('id, is_biduk')
+            .eq('lingkungan_id', targetLingkunganId)
+
+          if (kks) {
+            setTotalKK(kks.length)
+            setTotalBiduk(kks.filter(k => k.is_biduk).length)
+          }
+
+          // 4. Fetch Assets
+          const { data: asetList } = await supabase
+            .from('aset')
+            .select('jumlah, harga_satuan')
+            .eq('lingkungan_id', targetLingkunganId)
+
+          if (asetList) {
+            const totalVal = asetList.reduce((acc, curr) => acc + (Number(curr.jumlah || 0) * Number(curr.harga_satuan || 0)), 0)
+            setTotalNilaiAset(totalVal)
+          }
+        }
+      } catch (err) {
+        console.error('Error loading dashboard overview:', err)
+      } finally {
+        setLoading(false)
       }
-
-      if (!targetLingkunganId) {
-        // Fallback to first lingkungan
-        const { data: lData } = await supabase.from('lingkungan').select('id, nama_lingkungan').limit(1).single()
-        if (lData) {
-          targetLingkunganId = lData.id
-          setLingkunganName(lData.nama_lingkungan)
-        }
-      } else {
-        const { data: lData } = await supabase.from('lingkungan').select('nama_lingkungan').eq('id', targetLingkunganId).single()
-        if (lData) setLingkunganName(lData.nama_lingkungan)
-      }
-
-      setLingkunganId(targetLingkunganId)
-
-      if (targetLingkunganId) {
-        // 1. Fetch Profil Lingkungan Saldo Awal
-        const { data: profil } = await supabase
-          .from('profil_lingkungan')
-          .select('saldo_awal')
-          .eq('lingkungan_id', targetLingkunganId)
-          .maybeSingle()
-
-        const sa = Number(profil?.saldo_awal || 0)
-        setSaldoAwal(sa)
-
-        // 2. Fetch Journal Transactions
-        const { data: journals } = await supabase
-          .from('jurnal_transaksi')
-          .select('*, kepala_keluarga:kk_id(nama_kk)')
-          .eq('lingkungan_id', targetLingkunganId)
-          .order('tanggal', { ascending: false })
-
-        if (journals) {
-          let masuk = 0
-          let keluar = 0
-          journals.forEach((j) => {
-            const nom = Number(j.nominal) || 0
-            if (j.tipe_arus === 'MASUK') masuk += nom
-            else keluar += nom
-          })
-          setTotalKasMasuk(masuk)
-          setTotalKasKeluar(keluar)
-          setRecentTransactions(journals.slice(0, 5))
-        }
-
-        // 3. Fetch DAFU (KK)
-        const { data: kks } = await supabase
-          .from('kepala_keluarga')
-          .select('id, is_biduk')
-          .eq('lingkungan_id', targetLingkunganId)
-
-        if (kks) {
-          setTotalKK(kks.length)
-          setTotalBiduk(kks.filter(k => k.is_biduk).length)
-        }
-
-        // 4. Fetch Assets
-        const { data: asetList } = await supabase
-          .from('aset')
-          .select('jumlah, harga_satuan')
-          .eq('lingkungan_id', targetLingkunganId)
-
-        if (asetList) {
-          const totalVal = asetList.reduce((acc, curr) => acc + (Number(curr.jumlah || 0) * Number(curr.harga_satuan || 0)), 0)
-          setTotalNilaiAset(totalVal)
-        }
-      }
-
-      setLoading(false)
     }
 
     loadDashboardData()

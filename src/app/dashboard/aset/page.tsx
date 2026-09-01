@@ -36,37 +36,43 @@ export default function AsetPage() {
   useEffect(() => {
     async function loadData() {
       setLoading(true)
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+      try {
+        const { data } = await supabase.auth.getUser()
+        const user = data?.user
 
-      const { data: uData } = await supabase.from('users').select('*').eq('id', user.id).single()
-      if (uData) setUserProfile(uData)
-
-      let targetLingkunganId = localStorage.getItem('selected_lingkungan_id') || uData?.lingkungan_id || null
-      if (!targetLingkunganId) {
-        const { data: lData } = await supabase.from('lingkungan').select('id, nama_lingkungan').limit(1).single()
-        if (lData) {
-          targetLingkunganId = lData.id
-          setLingkunganName(lData.nama_lingkungan)
+        if (user) {
+          const { data: uData } = await supabase.from('users').select('*').eq('id', user.id).maybeSingle()
+          if (uData) setUserProfile(uData)
         }
-      } else {
-        const { data: lData } = await supabase.from('lingkungan').select('nama_lingkungan').eq('id', targetLingkunganId).single()
-        if (lData) setLingkunganName(lData.nama_lingkungan)
+
+        let targetLingkunganId = localStorage.getItem('selected_lingkungan_id')
+        if (!targetLingkunganId) {
+          const { data: lData } = await supabase.from('lingkungan').select('id, nama_lingkungan').limit(1).maybeSingle()
+          if (lData) {
+            targetLingkunganId = lData.id
+            setLingkunganName(lData.nama_lingkungan)
+          }
+        } else {
+          const { data: lData } = await supabase.from('lingkungan').select('nama_lingkungan').eq('id', targetLingkunganId).maybeSingle()
+          if (lData) setLingkunganName(lData.nama_lingkungan)
+        }
+
+        setLingkunganId(targetLingkunganId)
+
+        if (targetLingkunganId) {
+          const { data: items } = await supabase
+            .from('aset')
+            .select('*')
+            .eq('lingkungan_id', targetLingkunganId)
+            .order('nama_barang', { ascending: true })
+
+          if (items) setAsetList(items)
+        }
+      } catch (err) {
+        console.error('Error loading aset data:', err)
+      } finally {
+        setLoading(false)
       }
-
-      setLingkunganId(targetLingkunganId)
-
-      if (targetLingkunganId) {
-        const { data: items } = await supabase
-          .from('aset')
-          .select('*')
-          .eq('lingkungan_id', targetLingkunganId)
-          .order('nama_barang', { ascending: true })
-
-        if (items) setAsetList(items)
-      }
-
-      setLoading(false)
     }
 
     loadData()

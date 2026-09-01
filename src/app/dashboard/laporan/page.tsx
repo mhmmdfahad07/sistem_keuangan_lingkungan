@@ -32,52 +32,56 @@ export default function LaporanPage() {
   useEffect(() => {
     async function loadData() {
       setLoading(true)
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+      try {
+        const { data } = await supabase.auth.getUser()
+        const user = data?.user
 
-      let targetLingkunganId = localStorage.getItem('selected_lingkungan_id')
-      if (!targetLingkunganId) {
-        const { data: uData } = await supabase.from('users').select('lingkungan_id').eq('id', user.id).single()
-        targetLingkunganId = uData?.lingkungan_id || null
-      }
-
-      if (!targetLingkunganId) {
-        const { data: lData } = await supabase.from('lingkungan').select('id, nama_lingkungan').limit(1).single()
-        if (lData) {
-          targetLingkunganId = lData.id
-          setLingkunganName(lData.nama_lingkungan)
+        let targetLingkunganId = localStorage.getItem('selected_lingkungan_id')
+        if (!targetLingkunganId && user) {
+          const { data: uData } = await supabase.from('users').select('lingkungan_id').eq('id', user.id).maybeSingle()
+          targetLingkunganId = uData?.lingkungan_id || null
         }
-      } else {
-        const { data: lData } = await supabase.from('lingkungan').select('nama_lingkungan').eq('id', targetLingkunganId).single()
-        if (lData) setLingkunganName(lData.nama_lingkungan)
+
+        if (!targetLingkunganId) {
+          const { data: lData } = await supabase.from('lingkungan').select('id, nama_lingkungan').limit(1).maybeSingle()
+          if (lData) {
+            targetLingkunganId = lData.id
+            setLingkunganName(lData.nama_lingkungan)
+          }
+        } else {
+          const { data: lData } = await supabase.from('lingkungan').select('nama_lingkungan').eq('id', targetLingkunganId).maybeSingle()
+          if (lData) setLingkunganName(lData.nama_lingkungan)
+        }
+
+        setLingkunganId(targetLingkunganId)
+
+        // Fetch COA
+        const { data: coas } = await supabase.from('coa').select('*').order('id', { ascending: true })
+        if (coas) setCoaList(coas)
+
+        if (targetLingkunganId) {
+          // Fetch Saldo Awal
+          const { data: profil } = await supabase
+            .from('profil_lingkungan')
+            .select('saldo_awal')
+            .eq('lingkungan_id', targetLingkunganId)
+            .maybeSingle()
+
+          setSaldoAwal(Number(profil?.saldo_awal || 0))
+
+          // Fetch Journals
+          const { data: journals } = await supabase
+            .from('jurnal_transaksi')
+            .select('*')
+            .eq('lingkungan_id', targetLingkunganId)
+
+          if (journals) setJurnalList(journals)
+        }
+      } catch (err) {
+        console.error('Error loading laporan data:', err)
+      } finally {
+        setLoading(false)
       }
-
-      setLingkunganId(targetLingkunganId)
-
-      // Fetch COA
-      const { data: coas } = await supabase.from('coa').select('*').order('id', { ascending: true })
-      if (coas) setCoaList(coas)
-
-      if (targetLingkunganId) {
-        // Fetch Saldo Awal
-        const { data: profil } = await supabase
-          .from('profil_lingkungan')
-          .select('saldo_awal')
-          .eq('lingkungan_id', targetLingkunganId)
-          .maybeSingle()
-
-        setSaldoAwal(Number(profil?.saldo_awal || 0))
-
-        // Fetch Journals
-        const { data: journals } = await supabase
-          .from('jurnal_transaksi')
-          .select('*')
-          .eq('lingkungan_id', targetLingkunganId)
-
-        if (journals) setJurnalList(journals)
-      }
-
-      setLoading(false)
     }
 
     loadData()
