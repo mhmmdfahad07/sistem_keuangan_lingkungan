@@ -66,9 +66,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="w-10 h-10 rounded-full object-cover border border-amber-400/50 bg-white shrink-0 shadow-md"
           />
           <div className="min-w-0">
-            <h1 className="font-bold text-sm sm:text-base tracking-tight text-white flex items-center gap-2 truncate">
+            <h1 className="font-bold text-sm sm:text-base tracking-tight text-white flex items-center gap-2 truncate font-serif">
               Sistem Keuangan Lingkungan
-              <span className="text-[10px] font-semibold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30 px-1.5 py-0.5 rounded hidden xs:inline-block">
+              <span className="text-[10px] font-semibold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30 px-1.5 py-0.5 rounded hidden xs:inline-block font-sans">
                 v1.1
               </span>
             </h1>

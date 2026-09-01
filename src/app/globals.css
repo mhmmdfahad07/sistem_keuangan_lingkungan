@@ -80,12 +80,15 @@
 
 @layer base {
   * {
-    @apply border-slate-200 outline-emerald-500/50;
+    @apply border-slate-200 outline-amber-500/50;
   }
   body {
     @apply bg-slate-50 text-slate-900 font-sans antialiased;
   }
   html {
     @apply font-sans;
+  }
+  h1, h2, h3, h4, .font-serif-heading {
+    font-family: Georgia, Cambria, "Times New Roman", Times, serif;
   }
 }

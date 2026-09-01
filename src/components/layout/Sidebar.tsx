@@ -100,21 +100,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ userRole = 'BENDAHARA' }) => {
             className="w-10 h-10 rounded-full object-cover border border-slate-700 bg-white shrink-0 shadow-sm"
           />
           <div className="min-w-0">
-            <div className="text-sm font-extrabold text-white tracking-wide truncate uppercase">SICLAR</div>
+            <div className="text-base font-extrabold text-white tracking-wide truncate uppercase font-serif">SICLAR</div>
             <div className="text-[11px] text-slate-400 font-medium truncate">Keuangan Lingkungan</div>
           </div>
         </div>
 
         {/* Parish Badge & Role Header Card */}
         <div className="bg-slate-800/80 rounded-2xl p-3.5 border border-slate-700/80 shadow-md">
-          <div className="text-xs font-bold text-white truncate">Paroki Bekasi Utara</div>
+          <div className="text-xs font-bold text-white truncate font-serif">Paroki Bekasi Utara</div>
           <div className="text-[11px] text-slate-400 font-medium truncate mb-2">Bekasi Utara</div>
 
-          <div className="text-[10px] uppercase tracking-wider font-bold text-slate-400">
+          <div className="text-[10px] uppercase tracking-wider font-bold text-slate-400 font-serif">
             HAK AKSES ROLE:
           </div>
           <div className="text-xs font-bold text-white mt-0.5 flex items-center justify-between gap-1">
-            <span className="truncate">
+            <span className="truncate font-serif">
               {userRole === 'BENDAHARA' && 'Bendahara Lingkungan'}
               {userRole === 'SEKRETARIS' && 'Sekretaris (DAFU Only)'}
               {userRole === 'PAROKI' && 'Pengawas Paroki'}
@@ -134,7 +134,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ userRole = 'BENDAHARA' }) => {
 
         {/* Navigation Items */}
         <nav className="flex flex-col gap-1.5">
-          <div className="px-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+          <div className="px-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-serif">
             MENU UTAMA
           </div>
 
@@ -155,7 +155,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ userRole = 'BENDAHARA' }) => {
                 >
                   <div className="flex items-center gap-2.5 truncate">
                     <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-amber-400' : 'text-slate-400'}`} />
-                    <span className="truncate">{item.title}</span>
+                    <span className="truncate font-serif">{item.title}</span>
                   </div>
 
                   {item.badge && userRole !== 'SEKRETARIS' && (

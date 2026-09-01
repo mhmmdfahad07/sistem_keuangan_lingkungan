@@ -38,7 +38,7 @@ export default function LoginPage() {
               className="w-20 h-20 rounded-full object-cover border-2 border-amber-400/60 bg-white shadow-2xl"
             />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+          <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl font-serif">
             Sistem Keuangan Lingkungan
           </h1>
           <p className="text-xs text-amber-300 font-semibold tracking-wide uppercase">
@@ -48,7 +48,7 @@ export default function LoginPage() {
 
         <Card className="border-slate-200 bg-white shadow-2xl text-slate-900 rounded-2xl">
           <CardHeader className="space-y-1 text-center border-b border-slate-100 pb-6">
-            <CardTitle className="text-xl font-bold text-slate-800">Masuk ke System</CardTitle>
+            <CardTitle className="text-xl font-bold text-slate-800 font-serif">Masuk ke System</CardTitle>
             <CardDescription className="text-slate-500">
               Pilih salah satu peran demo di bawah atau ketik email terdaftar
             </CardDescription>
