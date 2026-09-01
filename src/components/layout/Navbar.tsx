@@ -56,23 +56,18 @@ export const Navbar: React.FC<NavbarProps> = ({
     lingkunganList.find((l) => l.id === selectedLingkunganId)?.nama_lingkungan || 'Semua Lingkungan'
 
   return (
-    <header className="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-30 shadow-md">
+    <header className="bg-[#16233F] text-white border-b border-[#2C3E66] sticky top-0 z-30 shadow-md">
       <div className="w-full px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
-        {/* Brand logo & title */}
+        {/* Text-only Title (Logo removed from Topbar per instructions) */}
         <div className="flex items-center gap-3 min-w-0">
-          <img
-            src="/logo-st-clara.jpg"
-            alt="Logo St. Clara"
-            className="w-10 h-10 rounded-full object-cover border border-amber-400/50 bg-white shrink-0 shadow-md"
-          />
           <div className="min-w-0">
             <h1 className="font-bold text-sm sm:text-base tracking-tight text-white flex items-center gap-2 truncate font-serif">
               Sistem Keuangan Lingkungan
-              <span className="text-[10px] font-semibold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30 px-1.5 py-0.5 rounded hidden xs:inline-block font-sans">
+              <span className="text-[10px] font-semibold uppercase tracking-wider bg-[#22335A] text-[#A9834F] border border-[#2C3E66] px-1.5 py-0.5 rounded-[4px] hidden xs:inline-block font-sans">
                 v1.1
               </span>
             </h1>
-            <p className="text-xs text-amber-300/90 font-semibold tracking-wide truncate">
+            <p className="text-xs text-[#8A90A3] font-medium tracking-wide truncate">
               Gereja St. Clara • Paroki Bekasi Utara
             </p>
           </div>
@@ -81,16 +76,16 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Middle & Right Section */}
         <div className="flex items-center gap-3">
           {/* Lingkungan Scope Indicator / Selector */}
-          <div className="flex items-center space-x-2 bg-slate-800/90 border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-slate-200 shadow-xs">
-            <Building2 className="w-4 h-4 text-amber-400 shrink-0" />
+          <div className="flex items-center space-x-2 bg-[#22335A] border border-[#2C3E66] rounded-[7px] px-3 py-1.5 text-xs text-slate-200 shadow-xs">
+            <Building2 className="w-4 h-4 text-[#A9834F] shrink-0" />
             {userProfile?.role === 'PAROKI' ? (
               <Select value={selectedLingkunganId || ''} onValueChange={(val) => val && onLingkunganChange(val)}>
                 <SelectTrigger className="h-6 border-none bg-transparent shadow-none focus:ring-0 text-xs font-medium p-0 text-white gap-1">
                   <SelectValue placeholder="Pilih Lingkungan" />
                 </SelectTrigger>
-                <SelectContent className="max-h-60 overflow-y-auto bg-slate-800 border-slate-700 text-slate-100">
+                <SelectContent className="max-h-60 overflow-y-auto bg-[#16233F] border-[#2C3E66] text-slate-100">
                   {lingkunganList.map((l) => (
-                    <SelectItem key={l.id} value={l.id} className="hover:bg-slate-700 focus:bg-slate-700 focus:text-white">
+                    <SelectItem key={l.id} value={l.id} className="hover:bg-[#22335A] focus:bg-[#22335A] focus:text-white">
                       {l.nama_lingkungan}
                     </SelectItem>
                   ))}
@@ -107,25 +102,25 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="relative">
             <button
               onClick={() => setShowProfileMenu(!showProfileMenu)}
-              className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700/80 p-1.5 pr-3 rounded-xl border border-slate-700/80 transition-colors cursor-pointer"
+              className="flex items-center gap-2 bg-[#22335A] hover:bg-[#22335A]/80 p-1.5 pr-3 rounded-[7px] border border-[#2C3E66] transition-colors cursor-pointer"
             >
-              <div className="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-300 font-bold flex items-center justify-center text-xs shrink-0">
+              <div className="w-8 h-8 rounded-[5px] bg-[#A9834F]/20 border border-[#A9834F]/30 text-[#A9834F] font-bold flex items-center justify-center text-xs shrink-0">
                 {userProfile?.email ? userProfile.email.charAt(0).toUpperCase() : 'U'}
               </div>
               <div className="text-left hidden md:block">
                 <div className="text-xs font-bold text-white leading-tight truncate max-w-[140px]">
                   {userProfile?.email ? userProfile.email.split('@')[0] : 'User'}
                 </div>
-                <div className="text-[10px] text-slate-400 truncate">
+                <div className="text-[10px] text-[#8A90A3] truncate">
                   {userProfile?.role || 'BENDAHARA'}
                 </div>
               </div>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-0.5 shrink-0" />
+              <ChevronDown className="w-3.5 h-3.5 text-[#8A90A3] ml-0.5 shrink-0" />
             </button>
 
             {showProfileMenu && (
-              <div className="absolute right-0 mt-2 w-60 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl p-2.5 z-50 text-xs">
-                <div className="p-2 border-b border-slate-700 mb-1 space-y-1">
+              <div className="absolute right-0 mt-2 w-60 bg-[#16233F] border border-[#2C3E66] rounded-[10px] shadow-2xl p-2.5 z-50 text-xs">
+                <div className="p-2 border-b border-[#2C3E66] mb-1 space-y-1">
                   <p className="font-bold text-white text-sm truncate">{userProfile?.email}</p>
                   <div className="mt-1">{getRoleBadge(userProfile?.role)}</div>
                 </div>
@@ -135,7 +130,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     onLogout()
                     setShowProfileMenu(false)
                   }}
-                  className="w-full text-left p-2.5 hover:bg-red-500/20 text-red-300 rounded-lg flex items-center gap-2 transition-colors cursor-pointer font-medium mt-1"
+                  className="w-full text-left p-2.5 hover:bg-red-500/20 text-red-300 rounded-[7px] flex items-center gap-2 transition-colors cursor-pointer font-medium mt-1"
                 >
                   <LogOut className="w-4 h-4 text-red-400" />
                   <span>Keluar (Logout)</span>
@@ -148,4 +143,5 @@ export const Navbar: React.FC<NavbarProps> = ({
     </header>
   )
 }
+
 

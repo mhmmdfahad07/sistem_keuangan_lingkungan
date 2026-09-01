@@ -49,41 +49,60 @@
 }
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --card: #ffffff;
-  --card-foreground: #0f172a;
-  --popover: #ffffff;
-  --popover-foreground: #0f172a;
-  --primary: #0f172a;
-  --primary-foreground: #ffffff;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #0f172a;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --accent: #f1f5f9;
-  --accent-foreground: #0f172a;
+  --navy: #16233F;
+  --navy-soft: #22335A;
+  --navy-line: #2C3E66;
+  --gold: #A9834F;
+  --gold-dark: #5A4423;
+  --gold-bg: #F6EFE2;
+  --bg: #F5F6F9;
+  --surface: #FFFFFF;
+  --surface-sunken: #F0F1F5;
+  --border: #E3E6EC;
+  --border-strong: #D3D7E0;
+  --text-primary: #1B2130;
+  --text-secondary: #5C6478;
+  --text-muted: #8A90A3;
+  --success: #2F7A54;
+  --success-bg: #E7F3EC;
+  --warning-text: #8A5A15;
+  --warning-bg: #FBF1E1;
+
+  --background: #F5F6F9;
+  --foreground: #1B2130;
+  --card: #FFFFFF;
+  --card-foreground: #1B2130;
+  --popover: #FFFFFF;
+  --popover-foreground: #1B2130;
+  --primary: #16233F;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F0F1F5;
+  --secondary-foreground: #1B2130;
+  --muted: #F0F1F5;
+  --muted-foreground: #5C6478;
+  --accent: #F6EFE2;
+  --accent-foreground: #5A4423;
   --destructive: #ef4444;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #059669;
-  --radius: 0.75rem;
-  --sidebar: #0f172a;
-  --sidebar-foreground: #f8fafc;
-  --sidebar-primary: #059669;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #1e293b;
-  --sidebar-accent-foreground: #f8fafc;
-  --sidebar-border: #1e293b;
-  --sidebar-ring: #059669;
+  --ring: #A9834F;
+  --radius: 0.625rem;
+  --sidebar: #16233F;
+  --sidebar-foreground: #F5F6F9;
+  --sidebar-primary: #A9834F;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #22335A;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #2C3E66;
+  --sidebar-ring: #A9834F;
 }
 
 @layer base {
   * {
-    @apply border-slate-200 outline-amber-500/50;
+    @apply border-[#E3E6EC] outline-[#A9834F]/50;
   }
   body {
-    @apply bg-slate-50 text-slate-900 font-sans antialiased;
+    background-color: var(--bg);
+    color: var(--text-primary);
+    @apply font-sans antialiased;
   }
   html {
     @apply font-sans;
