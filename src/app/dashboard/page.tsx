@@ -251,7 +251,108 @@ export default function DashboardOverviewPage() {
         </Card>
       </div>
 
-      {/* Main Content Grid: Recent Transactions & Quick Modules */}
+      {/* Corporate Cashflow Analytics Section */}
+      <Card className="bg-white border-[#E3E6EC] rounded-[12px] p-6 shadow-xs space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E3E6EC] pb-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider bg-[#22335A] text-[#A9834F] border border-[#2C3E66] px-2 py-0.5 rounded-[4px] font-sans">
+                FINANCIAL ANALYSIS
+              </span>
+              <h2 className="text-lg font-bold text-[#1B2130] font-serif">Analisis Cash Flow & Ketahanan Kas</h2>
+            </div>
+            <p className="text-xs text-[#5C6478] mt-1">
+              Metrik analisis arus kas operasional dan rasio ketahanan kas lingkungan berdasarkan standar akuntansi.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 text-xs font-semibold">
+            <span className="bg-[#E7F3EC] text-[#2F7A54] border border-[#2F7A54]/20 px-3 py-1.5 rounded-[6px] font-mono">
+              Net Margin: {totalKasMasuk > 0 ? (((totalKasMasuk - totalKasKeluar) / totalKasMasuk) * 100).toFixed(1) : '0.0'}%
+            </span>
+          </div>
+        </div>
+
+        {/* Corporate Metrics Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Metric 1: Operating Cashflow Net Margin */}
+          <div className="p-4 rounded-[10px] bg-[#F5F6F9] border border-[#E3E6EC] space-y-2">
+            <div className="text-xs font-bold text-[#5C6478] uppercase tracking-wider font-serif">Arus Kas Operasional Bersih</div>
+            <div className={`text-xl font-extrabold font-mono ${totalKasMasuk - totalKasKeluar >= 0 ? 'text-[#2F7A54]' : 'text-rose-600'}`}>
+              {formatRupiah(totalKasMasuk - totalKasKeluar)}
+            </div>
+            <div className="text-[11px] text-[#8A90A3]">
+              Selisih total kas masuk operasional dan kas keluar
+            </div>
+          </div>
+
+          {/* Metric 2: Coverage Ratio (Inflow / Outflow Ratio) */}
+          <div className="p-4 rounded-[10px] bg-[#F5F6F9] border border-[#E3E6EC] space-y-2">
+            <div className="text-xs font-bold text-[#5C6478] uppercase tracking-wider font-serif">Rasio Kecukupan Kas (Coverage)</div>
+            <div className="text-xl font-extrabold text-[#16233F] font-mono">
+              {totalKasKeluar > 0 ? (totalKasMasuk / totalKasKeluar).toFixed(2) : '1.00'}x
+            </div>
+            <div className="text-[11px] text-[#8A90A3]">
+              {totalKasKeluar > 0 && (totalKasMasuk / totalKasKeluar) >= 1
+                ? 'Penerimaan mencukupi pengeluaran'
+                : 'Pengeluaran melebihi penerimaan'}
+            </div>
+          </div>
+
+          {/* Metric 3: Cash Runway (Ketahanan Kas) */}
+          <div className="p-4 rounded-[10px] bg-[#F5F6F9] border border-[#E3E6EC] space-y-2">
+            <div className="text-xs font-bold text-[#5C6478] uppercase tracking-wider font-serif">Estimasi Runway Kas</div>
+            <div className="text-xl font-extrabold text-[#A9834F] font-mono">
+              {totalKasKeluar > 0 ? (saldoKasAkhir / (totalKasKeluar || 1)).toFixed(1) : '∞'} Bulan
+            </div>
+            <div className="text-[11px] text-[#8A90A3]">
+              Daya tahan kas lingkungan meng-cover pengeluaran
+            </div>
+          </div>
+        </div>
+
+        {/* Visual Progress Bar Cash Ratio */}
+        <div className="space-y-2 pt-2 border-t border-[#E3E6EC]">
+          <div className="flex justify-between text-xs font-bold text-[#1B2130]">
+            <span>Komposisi Arus Kas (Inflow vs Outflow)</span>
+            <span className="font-mono">
+              Inflow: {formatRupiah(totalKasMasuk)} | Outflow: {formatRupiah(totalKasKeluar)}
+            </span>
+          </div>
+
+          <div className="w-full h-3 bg-[#E3E6EC] rounded-full overflow-hidden flex">
+            <div
+              className="bg-[#2F7A54] h-full transition-all duration-300"
+              style={{
+                width: `${
+                  totalKasMasuk + totalKasKeluar > 0
+                    ? Math.min(100, Math.round((totalKasMasuk / (totalKasMasuk + totalKasKeluar)) * 100))
+                    : 50
+                }%`,
+              }}
+            />
+            <div
+              className="bg-rose-500 h-full transition-all duration-300"
+              style={{
+                width: `${
+                  totalKasMasuk + totalKasKeluar > 0
+                    ? Math.min(100, Math.round((totalKasKeluar / (totalKasMasuk + totalKasKeluar)) * 100))
+                    : 50
+                }%`,
+              }}
+            />
+          </div>
+
+          <div className="flex justify-between text-[11px] text-[#5C6478] font-medium pt-0.5">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#2F7A54] inline-block" /> Total Inflow ({totalKasMasuk + totalKasKeluar > 0 ? Math.round((totalKasMasuk / (totalKasMasuk + totalKasKeluar)) * 100) : 0}%)
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" /> Total Outflow ({totalKasMasuk + totalKasKeluar > 0 ? Math.round((totalKasKeluar / (totalKasMasuk + totalKasKeluar)) * 100) : 0}%)
+            </span>
+          </div>
+        </div>
+      </Card>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Transactions Table (2 Columns) */}
         <Card className="lg:col-span-2 bg-white border-slate-200 rounded-2xl shadow-xs overflow-hidden">
