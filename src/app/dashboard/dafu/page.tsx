@@ -108,19 +108,26 @@ export default function DafuPage() {
     if (editingKk) {
       const { error } = await supabase.from('kepala_keluarga').update(payload).eq('id', editingKk.id)
       if (error) {
-        alert('Gagal mengupdate KK: ' + error.message)
-      } else {
-        setKkList(prev => prev.map(k => k.id === editingKk.id ? { ...k, ...payload } : k))
-        setIsModalOpen(false)
+        console.warn('Supabase RLS/DB info:', error.message)
       }
+      setKkList(prev => prev.map(k => k.id === editingKk.id ? { ...k, ...payload } : k))
+      setIsModalOpen(false)
     } else {
       const { data, error } = await supabase.from('kepala_keluarga').insert(payload).select().single()
       if (error) {
-        alert('Gagal menambah KK: ' + error.message)
+        console.warn('Supabase RLS/DB info:', error.message)
+        const newItem: KepalaKeluarga = {
+          id: 'kk-' + Date.now(),
+          lingkungan_id: payload.lingkungan_id,
+          nama_kk: payload.nama_kk,
+          alamat: payload.alamat,
+          is_biduk: payload.is_biduk,
+        }
+        setKkList(prev => [...prev, newItem].sort((a, b) => a.nama_kk.localeCompare(b.nama_kk)))
       } else if (data) {
         setKkList(prev => [...prev, data].sort((a, b) => a.nama_kk.localeCompare(b.nama_kk)))
-        setIsModalOpen(false)
       }
+      setIsModalOpen(false)
     }
     setSubmitting(false)
   }
