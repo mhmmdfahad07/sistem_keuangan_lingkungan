@@ -185,108 +185,108 @@ export default function DaftarIsianPage() {
     <div className="space-y-6 max-w-5xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">M1. Daftar Isian & Profil Lingkungan</h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">M1. Daftar Isian & Profil Lingkungan</h1>
+          <p className="text-sm text-slate-500 mt-1">
             Data identitas lingkungan, pengurus (Ketua, Sekretaris, Bendahara), dan informasi pembukuan bank.
           </p>
         </div>
         {isSekretarisOrAdmin && (
-          <Button onClick={handleSave} disabled={saving} className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-600/20 border border-emerald-500/30 cursor-pointer">
-            <Save className="w-4 h-4 mr-2" />
+          <Button onClick={handleSave} disabled={saving} className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-2.5 rounded-xl shadow-xs cursor-pointer">
+            <Save className="w-4 h-4 mr-2 text-emerald-400" />
             {saving ? 'Menyimpan...' : 'Simpan Perubahan'}
           </Button>
         )}
       </div>
 
       {successMessage && (
-        <div className="p-4 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 flex items-center gap-2 text-sm font-medium">
-          <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-center gap-2 text-sm font-bold">
+          <CheckCircle2 className="w-5 h-5 text-emerald-600" />
           {successMessage}
         </div>
       )}
 
       <form onSubmit={handleSave} className="space-y-6">
         {/* BAGIAN A: Identitas Lingkungan */}
-        <Card className="bg-slate-900/90 border-slate-800 shadow-md">
-          <CardHeader className="bg-slate-800/50 border-b border-slate-800 flex flex-row items-center justify-between">
+        <Card className="bg-white border-slate-200 rounded-2xl shadow-xs">
+          <CardHeader className="bg-slate-50/80 border-b border-slate-100 flex flex-row items-center justify-between">
             <div>
-              <CardTitle className="text-base font-bold text-emerald-400 flex items-center gap-2">
-                <Building className="w-5 h-5" />
+              <CardTitle className="text-base font-bold text-slate-800 flex items-center gap-2">
+                <Building className="w-5 h-5 text-emerald-600" />
                 BAGIAN A: Identitas Lingkungan
               </CardTitle>
-              <CardDescription className="text-slate-400">Dikelola & diisi oleh Sekretaris Lingkungan</CardDescription>
+              <CardDescription className="text-slate-500">Dikelola & diisi oleh Sekretaris Lingkungan</CardDescription>
             </div>
             {!isSekretarisEditable && (
-              <span className="text-xs bg-slate-800 text-slate-400 border border-slate-700 px-2.5 py-1 rounded-md flex items-center gap-1 font-medium">
-                <Lock className="w-3.5 h-3.5 text-amber-400" /> Read Only (Sekretaris)
+              <span className="text-xs bg-purple-100 text-purple-800 border border-purple-200 px-2.5 py-1 rounded-md flex items-center gap-1 font-bold">
+                <Lock className="w-3.5 h-3.5 text-purple-600" /> Read Only (Sekretaris)
               </span>
             )}
           </CardHeader>
           <CardContent className="p-6 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="nama_lingkungan" className="text-slate-300">Nama Lingkungan</Label>
-                <Input id="nama_lingkungan" value={namaLingkungan} disabled className="bg-slate-800 border-slate-700 font-semibold text-white" />
+                <Label htmlFor="nama_lingkungan" className="text-xs font-semibold text-slate-700">Nama Lingkungan</Label>
+                <Input id="nama_lingkungan" value={namaLingkungan} disabled className="bg-slate-100 border-slate-200 font-semibold text-slate-900 rounded-xl" />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="ketua_id" className="text-slate-300">Ketua Lingkungan</Label>
+                <Label htmlFor="ketua_id" className="text-xs font-semibold text-slate-700">Ketua Lingkungan</Label>
                 <Select value={ketuaId} onValueChange={(val) => val && setKetuaId(val)} disabled={!isSekretarisEditable}>
-                  <SelectTrigger id="ketua_id" className="bg-slate-800 border-slate-700 text-white">
+                  <SelectTrigger id="ketua_id" className="bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500">
                     <SelectValue placeholder="-- Pilih Ketua Lingkungan --" />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-800 border-slate-700 text-white">
+                  <SelectContent className="bg-white border-slate-200 text-slate-900">
                     {kkList.map((kk) => (
                       <SelectItem key={kk.id} value={kk.id}>{kk.nama_kk}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="text-[11px] text-slate-500">Sumber data dari Modul DAFU</p>
+                <p className="text-[11px] text-slate-400">Sumber data dari Modul DAFU</p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="sekretaris_id" className="text-slate-300">Sekretaris Lingkungan</Label>
+                <Label htmlFor="sekretaris_id" className="text-xs font-semibold text-slate-700">Sekretaris Lingkungan</Label>
                 <Select value={sekretarisId} onValueChange={(val) => val && setSekretarisId(val)} disabled={!isSekretarisEditable}>
-                  <SelectTrigger id="sekretaris_id" className="bg-slate-800 border-slate-700 text-white">
+                  <SelectTrigger id="sekretaris_id" className="bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500">
                     <SelectValue placeholder="-- Pilih Sekretaris --" />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-800 border-slate-700 text-white">
+                  <SelectContent className="bg-white border-slate-200 text-slate-900">
                     {kkList.map((kk) => (
                       <SelectItem key={kk.id} value={kk.id}>{kk.nama_kk}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="text-[11px] text-slate-500">Sumber data dari Modul DAFU</p>
+                <p className="text-[11px] text-slate-400">Sumber data dari Modul DAFU</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* BAGIAN B: Identitas Bendahara */}
-        <Card className="bg-slate-900/90 border-slate-800 shadow-md">
-          <CardHeader className="bg-slate-800/50 border-b border-slate-800 flex flex-row items-center justify-between">
+        <Card className="bg-white border-slate-200 rounded-2xl shadow-xs">
+          <CardHeader className="bg-slate-50/80 border-b border-slate-100 flex flex-row items-center justify-between">
             <div>
-              <CardTitle className="text-base font-bold text-emerald-400 flex items-center gap-2">
-                <UserCheck className="w-5 h-5" />
+              <CardTitle className="text-base font-bold text-slate-800 flex items-center gap-2">
+                <UserCheck className="w-5 h-5 text-emerald-600" />
                 BAGIAN B: Identitas Bendahara
               </CardTitle>
-              <CardDescription className="text-slate-400">Dikelola & diisi oleh Sekretaris Lingkungan</CardDescription>
+              <CardDescription className="text-slate-500">Dikelola & diisi oleh Sekretaris Lingkungan</CardDescription>
             </div>
             {!isSekretarisEditable && (
-              <span className="text-xs bg-slate-800 text-slate-400 border border-slate-700 px-2.5 py-1 rounded-md flex items-center gap-1 font-medium">
-                <Lock className="w-3.5 h-3.5 text-amber-400" /> Read Only (Sekretaris)
+              <span className="text-xs bg-purple-100 text-purple-800 border border-purple-200 px-2.5 py-1 rounded-md flex items-center gap-1 font-bold">
+                <Lock className="w-3.5 h-3.5 text-purple-600" /> Read Only (Sekretaris)
               </span>
             )}
           </CardHeader>
           <CardContent className="p-6 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="bendahara_id" className="text-slate-700">Nama Bendahara Lingkungan</Label>
+                <Label htmlFor="bendahara_id" className="text-xs font-semibold text-slate-700">Nama Bendahara Lingkungan</Label>
                 <Select value={bendaharaId} onValueChange={(val) => val && handleBendaharaSelect(val)} disabled={!isSekretarisEditable}>
-                  <SelectTrigger id="bendahara_id">
+                  <SelectTrigger id="bendahara_id" className="bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500">
                     <SelectValue placeholder="-- Pilih Bendahara --" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white border-slate-200 text-slate-900">
                     {kkList.map((kk) => (
                       <SelectItem key={kk.id} value={kk.id}>{kk.nama_kk}</SelectItem>
                     ))}
@@ -295,34 +295,35 @@ export default function DaftarIsianPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="alamat_bendahara" className="text-slate-700">Alamat Bendahara</Label>
+                <Label htmlFor="alamat_bendahara" className="text-xs font-semibold text-slate-700">Alamat Bendahara</Label>
                 <Input
                   id="alamat_bendahara"
                   value={alamatBendahara}
                   disabled
                   placeholder="Otomatis terisi dari DAFU"
-                  className="bg-slate-100"
+                  className="bg-slate-100 border-slate-200 text-slate-700 rounded-xl"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="telepon" className="text-slate-700">Nomor Telepon / WhatsApp</Label>
+                <Label htmlFor="telepon" className="text-xs font-semibold text-slate-700">Nomor Telepon / WhatsApp</Label>
                 <Input
                   id="telepon"
                   value={teleponBendahara}
                   onChange={(e) => setTeleponBendahara(e.target.value)}
                   disabled={!isSekretarisEditable}
                   placeholder="081234567890"
+                  className="bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="periode" className="text-slate-700">Periode Masa Bhakti</Label>
+                <Label htmlFor="periode" className="text-xs font-semibold text-slate-700">Periode Masa Bhakti</Label>
                 <Select value={periodeMasaBakti} onValueChange={(val) => val && setPeriodeMasaBakti(val)} disabled={!isSekretarisEditable}>
-                  <SelectTrigger id="periode">
+                  <SelectTrigger id="periode" className="bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white border-slate-200 text-slate-900">
                     <SelectItem value="2024-2026">2024 - 2026</SelectItem>
                     <SelectItem value="2027-2029">2027 - 2029</SelectItem>
                     <SelectItem value="2030-2032">2030 - 2032</SelectItem>
@@ -331,16 +332,16 @@ export default function DaftarIsianPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="hub_kerabat" className="text-slate-700">Hubungan Kekerabatan dgn Ketua</Label>
+                <Label htmlFor="hub_kerabat" className="text-xs font-semibold text-slate-700">Hubungan Kekerabatan dgn Ketua</Label>
                 <Select
                   value={isHubKerabat ? 'YA' : 'TIDAK'}
                   onValueChange={(val) => setIsHubKerabat(val === 'YA')}
                   disabled={!isSekretarisEditable}
                 >
-                  <SelectTrigger id="hub_kerabat">
+                  <SelectTrigger id="hub_kerabat" className="bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white border-slate-200 text-slate-900">
                     <SelectItem value="TIDAK">Tidak Ada Hubungan Kekerabatan</SelectItem>
                     <SelectItem value="YA">Ada Hubungan Kekerabatan</SelectItem>
                   </SelectContent>
@@ -348,16 +349,16 @@ export default function DaftarIsianPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="biduk_kaj" className="text-slate-700">Terdaftar di BIDUK KAJ</Label>
+                <Label htmlFor="biduk_kaj" className="text-xs font-semibold text-slate-700">Terdaftar di BIDUK KAJ</Label>
                 <Select
                   value={isBendaharaKaj ? 'YA' : 'TIDAK'}
                   onValueChange={(val) => setIsBendaharaKaj(val === 'YA')}
                   disabled={!isSekretarisEditable}
                 >
-                  <SelectTrigger id="biduk_kaj">
+                  <SelectTrigger id="biduk_kaj" className="bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white border-slate-200 text-slate-900">
                     <SelectItem value="YA">Ya, Terdaftar BIDUK</SelectItem>
                     <SelectItem value="TIDAK">Tidak Terdaftar</SelectItem>
                   </SelectContent>
@@ -368,78 +369,82 @@ export default function DaftarIsianPage() {
         </Card>
 
         {/* BAGIAN C: Informasi Pembukuan */}
-        <Card className="border-slate-200 shadow-xs">
-          <CardHeader className="bg-slate-50/50 border-b border-slate-100 flex flex-row items-center justify-between">
+        <Card className="bg-white border-slate-200 rounded-2xl shadow-xs">
+          <CardHeader className="bg-slate-50/80 border-b border-slate-100 flex flex-row items-center justify-between">
             <div>
-              <CardTitle className="text-base font-bold text-[#1a56a0] flex items-center gap-2">
-                <Wallet className="w-5 h-5" />
+              <CardTitle className="text-base font-bold text-slate-800 flex items-center gap-2">
+                <Wallet className="w-5 h-5 text-emerald-600" />
                 BAGIAN C: Informasi Pembukuan & Bank
               </CardTitle>
-              <CardDescription>Dikelola & diisi oleh Bendahara Lingkungan</CardDescription>
+              <CardDescription className="text-slate-500">Dikelola & diisi oleh Bendahara Lingkungan</CardDescription>
             </div>
             {!isBendaharaEditable && (
-              <span className="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md flex items-center gap-1 font-medium">
-                <Lock className="w-3.5 h-3.5" /> Read Only (Bendahara)
+              <span className="text-xs bg-amber-100 text-amber-800 border border-amber-200 px-2.5 py-1 rounded-md flex items-center gap-1 font-bold">
+                <Lock className="w-3.5 h-3.5 text-amber-600" /> Read Only (Bendahara)
               </span>
             )}
           </CardHeader>
           <CardContent className="p-6 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="jenis_rekening" className="text-slate-700">Jenis Rekening</Label>
+                <Label htmlFor="jenis_rekening" className="text-xs font-semibold text-slate-700">Jenis Rekening</Label>
                 <Input
                   id="jenis_rekening"
                   value={jenisRekening}
                   onChange={(e) => setJenisRekening(e.target.value)}
                   disabled={!isBendaharaEditable}
                   placeholder="Tabungan / Giro"
+                  className="bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="nama_bank" className="text-slate-700">Nama Bank</Label>
+                <Label htmlFor="nama_bank" className="text-xs font-semibold text-slate-700">Nama Bank</Label>
                 <Input
                   id="nama_bank"
                   value={namaBank}
                   onChange={(e) => setNamaBank(e.target.value)}
                   disabled={!isBendaharaEditable}
                   placeholder="BCA / Mandiri / BRI"
+                  className="bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="no_rekening" className="text-slate-700">Nomor Rekening Bank</Label>
+                <Label htmlFor="no_rekening" className="text-xs font-semibold text-slate-700">Nomor Rekening Bank</Label>
                 <Input
                   id="no_rekening"
                   value={noRekening}
                   onChange={(e) => setNoRekening(e.target.value)}
                   disabled={!isBendaharaEditable}
                   placeholder="1234567890"
+                  className="bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500 font-mono"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="tahun_buku" className="text-slate-700">Tahun Buku Pembukuan</Label>
+                <Label htmlFor="tahun_buku" className="text-xs font-semibold text-slate-700">Tahun Buku Pembukuan</Label>
                 <Input
                   id="tahun_buku"
                   value={tahunBuku}
                   onChange={(e) => setTahunBuku(e.target.value)}
                   disabled={!isBendaharaEditable}
                   placeholder="2026"
+                  className="bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="bulan_saldo" className="text-slate-700">Bulan Saldo Awal</Label>
+                <Label htmlFor="bulan_saldo" className="text-xs font-semibold text-slate-700">Bulan Saldo Awal</Label>
                 <Select
                   value={bulanSaldo.toString()}
                   onValueChange={(val) => val && setBulanSaldo(parseInt(val))}
                   disabled={!isBendaharaEditable}
                 >
-                  <SelectTrigger id="bulan_saldo">
+                  <SelectTrigger id="bulan_saldo" className="bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white border-slate-200 text-slate-900">
                     <SelectItem value="1">Januari</SelectItem>
                     <SelectItem value="2">Februari</SelectItem>
                     <SelectItem value="3">Maret</SelectItem>
@@ -457,7 +462,7 @@ export default function DaftarIsianPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="saldo_awal" className="text-slate-700">Saldo Awal Pembukuan (Rp)</Label>
+                <Label htmlFor="saldo_awal" className="text-xs font-semibold text-slate-700">Saldo Awal Pembukuan (Rp)</Label>
                 <Input
                   id="saldo_awal"
                   type="number"
@@ -465,6 +470,7 @@ export default function DaftarIsianPage() {
                   onChange={(e) => setSaldoAwal(parseFloat(e.target.value) || 0)}
                   disabled={!isBendaharaEditable}
                   placeholder="0"
+                  className="bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500 font-mono font-bold"
                 />
               </div>
             </div>
@@ -473,8 +479,8 @@ export default function DaftarIsianPage() {
 
         {isSekretarisOrAdmin && (
           <div className="flex justify-end">
-            <Button type="submit" disabled={saving} className="bg-[#1a56a0] hover:bg-[#144580] text-white px-8">
-              <Save className="w-4 h-4 mr-2" />
+            <Button type="submit" disabled={saving} className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-8 py-2.5 rounded-xl shadow-xs cursor-pointer">
+              <Save className="w-4 h-4 mr-2 text-emerald-400" />
               {saving ? 'Menyimpan...' : 'Simpan Profil Lingkungan'}
             </Button>
           </div>
@@ -483,3 +489,4 @@ export default function DaftarIsianPage() {
     </div>
   )
 }
+

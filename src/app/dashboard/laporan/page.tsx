@@ -170,9 +170,9 @@ export default function LaporanPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">M5. Laporan Aktivitas Finansial</h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Rekapitulasi Penerimaan & Pengeluaran Kas Lingkungan <span className="text-emerald-400 font-semibold">{lingkunganName}</span>.
+          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">M5. Laporan Aktivitas Finansial</h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Rekapitulasi Penerimaan & Pengeluaran Kas Lingkungan <span className="text-emerald-700 font-semibold">{lingkunganName}</span>.
           </p>
         </div>
 
@@ -180,7 +180,7 @@ export default function LaporanPage() {
           <Button
             onClick={() => window.print()}
             variant="outline"
-            className="border-slate-700 text-slate-300 hover:bg-slate-800 cursor-pointer"
+            className="border-slate-300 text-slate-700 hover:bg-slate-100 font-semibold rounded-xl cursor-pointer"
           >
             <Printer className="w-4 h-4 mr-2" />
             Cetak
@@ -189,41 +189,41 @@ export default function LaporanPage() {
           <Button
             onClick={handleSyncGoogleSheets}
             disabled={exporting}
-            className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-600/20 border border-emerald-500/30 cursor-pointer"
+            className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-2.5 rounded-xl shadow-xs cursor-pointer"
           >
-            <FileSpreadsheet className="w-4 h-4 mr-2" />
+            <FileSpreadsheet className="w-4 h-4 mr-2 text-emerald-400" />
             {exporting ? 'Syncing...' : 'Sync to Google Sheets'}
           </Button>
         </div>
       </div>
 
       {exportResult && (
-        <div className="p-4 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 flex items-center justify-between gap-4">
+        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
-            <span className="text-sm font-medium">{exportResult.msg}</span>
+            <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+            <span className="text-sm font-bold">{exportResult.msg}</span>
           </div>
           <a
             href={exportResult.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center text-xs font-bold text-emerald-300 hover:underline bg-slate-900 px-3 py-1.5 rounded-lg border border-emerald-500/40"
+            className="inline-flex items-center text-xs font-bold text-slate-900 hover:underline bg-white px-3 py-1.5 rounded-lg border border-slate-300 shadow-xs"
           >
-            Buka Google Sheets <ExternalLink className="w-3.5 h-3.5 ml-1" />
+            Buka Google Sheets <ExternalLink className="w-3.5 h-3.5 ml-1 text-emerald-600" />
           </a>
         </div>
       )}
 
       {/* Filter Card */}
-      <Card className="bg-slate-900/90 border-slate-800 shadow-md">
+      <Card className="bg-white border-slate-200 rounded-2xl shadow-xs">
         <CardContent className="p-4 flex items-center gap-4">
           <div className="w-44">
-            <Label className="text-xs font-medium text-slate-400 mb-1 block">Bulan Laporan</Label>
+            <Label className="text-xs font-semibold text-slate-700 mb-1 block">Bulan Laporan</Label>
             <Select value={selectedMonth.toString()} onValueChange={(v) => v && setSelectedMonth(parseInt(v))}>
-              <SelectTrigger className="h-9 bg-slate-800 border-slate-700 text-white">
+              <SelectTrigger className="h-9 bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-slate-800 border-slate-700 text-white">
+              <SelectContent className="bg-white border-slate-200 text-slate-900">
                 {MONTH_NAMES.map((m, idx) => (
                   <SelectItem key={idx} value={(idx + 1).toString()}>{m}</SelectItem>
                 ))}
@@ -232,12 +232,12 @@ export default function LaporanPage() {
           </div>
 
           <div className="w-32">
-            <Label className="text-xs text-slate-500 mb-1 block">Tahun</Label>
+            <Label className="text-xs font-semibold text-slate-700 mb-1 block">Tahun</Label>
             <Select value={selectedYear.toString()} onValueChange={(v) => v && setSelectedYear(parseInt(v))}>
-              <SelectTrigger className="h-9">
+              <SelectTrigger className="h-9 bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white border-slate-200 text-slate-900">
                 <SelectItem value="2026">2026</SelectItem>
                 <SelectItem value="2025">2025</SelectItem>
                 <SelectItem value="2024">2024</SelectItem>
@@ -248,9 +248,9 @@ export default function LaporanPage() {
       </Card>
 
       {/* Report Document Sheet View */}
-      <Card className="border-slate-300 shadow-md bg-white">
-        <CardHeader className="text-center border-b border-slate-200 pb-6 pt-8 bg-slate-50/40">
-          <CardTitle className="text-xl font-extrabold text-[#1a56a0] tracking-wide uppercase">
+      <Card className="border-slate-200 shadow-xs bg-white rounded-2xl overflow-hidden">
+        <CardHeader className="text-center border-b border-slate-100 pb-6 pt-8 bg-slate-50/60">
+          <CardTitle className="text-xl font-extrabold text-slate-900 tracking-wide uppercase">
             LAPORAN AKTIVITAS LINGKUNGAN
           </CardTitle>
           <p className="text-base font-semibold text-slate-800 mt-1">
@@ -270,15 +270,15 @@ export default function LaporanPage() {
             </div>
             <div>
               <p className="text-xs text-slate-500 font-medium">Total Penerimaan</p>
-              <p className="text-base font-bold text-emerald-600">+{formatRupiah(totalPenerimaan)}</p>
+              <p className="text-base font-bold text-emerald-700">+{formatRupiah(totalPenerimaan)}</p>
             </div>
             <div>
               <p className="text-xs text-slate-500 font-medium">Total Pengeluaran</p>
-              <p className="text-base font-bold text-rose-600">-{formatRupiah(totalPengeluaran)}</p>
+              <p className="text-base font-bold text-rose-700">-{formatRupiah(totalPengeluaran)}</p>
             </div>
             <div>
               <p className="text-xs text-slate-500 font-medium">Saldo Kas Akhir</p>
-              <p className="text-base font-extrabold text-blue-700">{formatRupiah(saldoAkhir)}</p>
+              <p className="text-base font-extrabold text-slate-900">{formatRupiah(saldoAkhir)}</p>
             </div>
           </div>
 
@@ -288,11 +288,11 @@ export default function LaporanPage() {
               I. PENERIMAAN (REVENUE)
             </h3>
             <Table>
-              <TableHeader className="bg-emerald-50/50">
+              <TableHeader className="bg-emerald-50/60">
                 <TableRow>
-                  <TableHead className="w-24 font-bold">Kode Akun</TableHead>
-                  <TableHead className="font-bold">Uraian Akun Penerimaan</TableHead>
-                  <TableHead className="text-right font-bold">Jumlah (Rp)</TableHead>
+                  <TableHead className="w-24 font-bold text-emerald-950">Kode Akun</TableHead>
+                  <TableHead className="font-bold text-emerald-950">Uraian Akun Penerimaan</TableHead>
+                  <TableHead className="text-right font-bold text-emerald-950">Jumlah (Rp)</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -311,9 +311,9 @@ export default function LaporanPage() {
                     </TableRow>
                   ))
                 )}
-                <TableRow className="bg-emerald-50/80 font-bold">
-                  <TableCell colSpan={2} className="text-emerald-900 text-sm">JUMLAH PENERIMAAN (I)</TableCell>
-                  <TableCell className="text-right text-emerald-700 text-base">{formatRupiah(totalPenerimaan)}</TableCell>
+                <TableRow className="bg-emerald-100/80 font-bold">
+                  <TableCell colSpan={2} className="text-emerald-950 text-sm">JUMLAH PENERIMAAN (I)</TableCell>
+                  <TableCell className="text-right text-emerald-950 text-base font-extrabold">{formatRupiah(totalPenerimaan)}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -325,11 +325,11 @@ export default function LaporanPage() {
               II. PENGELUARAN (EXPENSE)
             </h3>
             <Table>
-              <TableHeader className="bg-rose-50/50">
+              <TableHeader className="bg-rose-50/60">
                 <TableRow>
-                  <TableHead className="w-24 font-bold">Kode Akun</TableHead>
-                  <TableHead className="font-bold">Uraian Akun Pengeluaran</TableHead>
-                  <TableHead className="text-right font-bold">Jumlah (Rp)</TableHead>
+                  <TableHead className="w-24 font-bold text-rose-950">Kode Akun</TableHead>
+                  <TableHead className="font-bold text-rose-950">Uraian Akun Pengeluaran</TableHead>
+                  <TableHead className="text-right font-bold text-rose-950">Jumlah (Rp)</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -348,16 +348,16 @@ export default function LaporanPage() {
                     </TableRow>
                   ))
                 )}
-                <TableRow className="bg-rose-50/80 font-bold">
-                  <TableCell colSpan={2} className="text-rose-900 text-sm">JUMLAH PENGELUARAN (II)</TableCell>
-                  <TableCell className="text-right text-rose-700 text-base">{formatRupiah(totalPengeluaran)}</TableCell>
+                <TableRow className="bg-rose-100/80 font-bold">
+                  <TableCell colSpan={2} className="text-rose-950 text-sm">JUMLAH PENGELUARAN (II)</TableCell>
+                  <TableCell className="text-right text-rose-950 text-base font-extrabold">{formatRupiah(totalPengeluaran)}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
           </div>
 
           {/* Section 3: Surplus / Defisit & Saldo Akhir */}
-          <div className="p-4 rounded-xl bg-slate-900 text-white space-y-2">
+          <div className="p-4 rounded-2xl bg-slate-900 text-white space-y-2">
             <div className="flex justify-between items-center text-sm font-semibold">
               <span>SURPLUS / (DEFISIT) BULANAN (I - II):</span>
               <span className={surplusDefisit >= 0 ? 'text-emerald-400 text-base font-extrabold' : 'text-rose-400 text-base font-extrabold'}>
@@ -365,8 +365,8 @@ export default function LaporanPage() {
               </span>
             </div>
             <div className="border-t border-slate-700 pt-2 flex justify-between items-center text-base font-extrabold">
-              <span className="text-blue-300">SALDO KAS / BANK AKHIR KELOLAAN:</span>
-              <span className="text-xl text-white">{formatRupiah(saldoAkhir)}</span>
+              <span className="text-amber-300">SALDO KAS / BANK AKHIR KELOLAAN:</span>
+              <span className="text-xl text-white font-mono">{formatRupiah(saldoAkhir)}</span>
             </div>
           </div>
         </CardContent>
@@ -374,3 +374,4 @@ export default function LaporanPage() {
     </div>
   )
 }
+

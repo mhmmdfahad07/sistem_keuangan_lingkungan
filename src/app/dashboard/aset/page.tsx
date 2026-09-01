@@ -165,14 +165,14 @@ export default function AsetPage() {
     <div className="space-y-6 max-w-6xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">M6. Daftar Aset & Inventaris Lingkungan</h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Pencatatan inventaris fisik barang Lingkungan <span className="text-emerald-400 font-semibold">{lingkunganName}</span>. Dikelola oleh Bendahara.
+          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">M6. Daftar Aset & Inventaris Lingkungan</h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Pencatatan inventaris fisik barang Lingkungan <span className="text-emerald-700 font-semibold">{lingkunganName}</span>. Dikelola oleh Bendahara.
           </p>
         </div>
         {isBendahara && (
-          <Button onClick={openAddModal} className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-600/20 border border-emerald-500/30 cursor-pointer">
-            <Plus className="w-4 h-4 mr-2" />
+          <Button onClick={openAddModal} className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-2.5 rounded-xl shadow-xs cursor-pointer">
+            <Plus className="w-4 h-4 mr-2 text-emerald-400" />
             Tambah Aset Inventaris
           </Button>
         )}
@@ -180,56 +180,60 @@ export default function AsetPage() {
 
       {/* Summary Stat Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card className="bg-slate-900/90 border-slate-800 shadow-md">
+        <Card className="bg-white border-slate-200 rounded-2xl p-1 shadow-xs">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Unit Barang Inventaris</CardTitle>
-            <Package className="w-5 h-5 text-emerald-400" />
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500">Total Unit Barang Inventaris</CardTitle>
+            <div className="p-2 bg-slate-100 rounded-xl text-slate-700">
+              <Package className="w-4 h-4" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-extrabold text-white">{totalUnit} <span className="text-sm font-normal text-slate-400">Unit</span></div>
+            <div className="text-2xl font-extrabold text-slate-900">{totalUnit} <span className="text-sm font-normal text-slate-500">Unit</span></div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900/90 border-slate-800 shadow-md">
+        <Card className="bg-amber-50/60 border-amber-200 rounded-2xl p-1 shadow-xs">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Perkiraan Nilai Aset</CardTitle>
-            <Calculator className="w-5 h-5 text-emerald-400" />
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-amber-800">Total Perkiraan Nilai Aset</CardTitle>
+            <div className="p-2 bg-amber-100 rounded-xl text-amber-800">
+              <Calculator className="w-4 h-4" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-extrabold text-emerald-400">{formatRupiah(grandTotalNilai)}</div>
+            <div className="text-2xl font-extrabold text-amber-950">{formatRupiah(grandTotalNilai)}</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Table Card */}
-      <Card className="bg-slate-900/90 border-slate-800 shadow-md">
-        <CardHeader className="pb-4 border-b border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <CardTitle className="text-base font-bold text-white">Daftar Inventaris ({filteredAsetList.length})</CardTitle>
+      <Card className="bg-white border-slate-200 rounded-2xl shadow-xs overflow-hidden">
+        <CardHeader className="pb-4 border-b border-slate-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <CardTitle className="text-base font-bold text-slate-800">Daftar Inventaris ({filteredAsetList.length})</CardTitle>
           <div className="relative w-full md:w-72">
             <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
             <Input
               placeholder="Cari nama barang..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-emerald-500"
+              className="pl-9 bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500"
             />
           </div>
         </CardHeader>
         <CardContent className="p-0">
           <Table>
-            <TableHeader className="bg-slate-800/80 border-b border-slate-800">
-              <TableRow className="border-slate-800">
-                <TableHead className="w-12 text-center text-slate-400">No</TableHead>
-                <TableHead className="text-slate-300">Nama Barang Inventaris</TableHead>
-                <TableHead className="text-slate-300">Kategori</TableHead>
-                <TableHead className="text-center text-slate-300">Tahun Beli</TableHead>
-                <TableHead className="text-center text-slate-300">Jumlah</TableHead>
-                <TableHead className="text-right text-slate-300">Harga Satuan (Rp)</TableHead>
-                <TableHead className="text-right text-slate-300">Total Nilai (Rp)</TableHead>
-                {isBendahara && <TableHead className="w-16 text-right text-slate-300">Aksi</TableHead>}
+            <TableHeader className="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+              <TableRow>
+                <TableHead className="w-12 text-center text-slate-700 font-bold">No</TableHead>
+                <TableHead className="text-slate-800 font-bold">Nama Barang Inventaris</TableHead>
+                <TableHead className="text-slate-800 font-bold">Kategori</TableHead>
+                <TableHead className="text-center text-slate-800 font-bold">Tahun Beli</TableHead>
+                <TableHead className="text-center text-slate-800 font-bold">Jumlah</TableHead>
+                <TableHead className="text-right text-slate-800 font-bold">Harga Satuan (Rp)</TableHead>
+                <TableHead className="text-right text-slate-800 font-bold">Total Nilai (Rp)</TableHead>
+                {isBendahara && <TableHead className="w-16 text-right text-slate-800 font-bold">Aksi</TableHead>}
               </TableRow>
             </TableHeader>
-            <TableBody className="divide-y divide-slate-800">
+            <TableBody className="divide-y divide-slate-100">
               {filteredAsetList.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={isBendahara ? 8 : 7} className="text-center py-8 text-slate-400">
@@ -240,21 +244,21 @@ export default function AsetPage() {
                 filteredAsetList.map((item, idx) => {
                   const subtotal = (item.jumlah || 0) * Number(item.harga_satuan || 0)
                   return (
-                    <TableRow key={item.id} className="hover:bg-slate-800/50 border-slate-800">
-                      <TableCell className="text-center font-mono text-xs text-slate-400">{idx + 1}</TableCell>
-                      <TableCell className="font-semibold text-white">{item.nama_barang}</TableCell>
-                      <TableCell className="text-sm text-slate-300">{item.kategori || '-'}</TableCell>
-                      <TableCell className="text-center font-mono text-xs text-slate-400">{item.tahun_beli || '-'}</TableCell>
-                      <TableCell className="text-center font-bold text-white">{item.jumlah}</TableCell>
-                      <TableCell className="text-right font-mono text-sm text-slate-300">{formatRupiah(Number(item.harga_satuan))}</TableCell>
-                      <TableCell className="text-right font-mono font-bold text-emerald-400">{formatRupiah(subtotal)}</TableCell>
+                    <TableRow key={item.id} className="hover:bg-slate-50 transition">
+                      <TableCell className="text-center font-mono text-xs text-slate-500">{idx + 1}</TableCell>
+                      <TableCell className="font-semibold text-slate-900">{item.nama_barang}</TableCell>
+                      <TableCell className="text-sm text-slate-600">{item.kategori || '-'}</TableCell>
+                      <TableCell className="text-center font-mono text-xs text-slate-500">{item.tahun_beli || '-'}</TableCell>
+                      <TableCell className="text-center font-bold text-slate-900">{item.jumlah}</TableCell>
+                      <TableCell className="text-right font-mono text-sm text-slate-700">{formatRupiah(Number(item.harga_satuan))}</TableCell>
+                      <TableCell className="text-right font-mono font-bold text-emerald-700">{formatRupiah(subtotal)}</TableCell>
                       {isBendahara && (
                         <TableCell className="text-right space-x-1">
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => openEditModal(item)}
-                            className="h-8 w-8 p-0 text-emerald-400 hover:text-emerald-300 hover:bg-slate-800 cursor-pointer"
+                            className="h-8 w-8 p-0 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg cursor-pointer"
                           >
                             <Pencil className="w-4 h-4" />
                           </Button>
@@ -262,7 +266,7 @@ export default function AsetPage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => handleDelete(item.id, item.nama_barang)}
-                            className="h-8 w-8 p-0 text-rose-400 hover:text-rose-300 hover:bg-slate-800 cursor-pointer"
+                            className="h-8 w-8 p-0 text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-lg cursor-pointer"
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
@@ -279,30 +283,30 @@ export default function AsetPage() {
 
       {/* Add / Edit Dialog */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-md bg-slate-900 border-slate-800 text-white">
+        <DialogContent className="sm:max-w-md bg-white border-slate-200 text-slate-900 rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-white font-bold">{editingAset ? 'Edit Barang Inventaris' : 'Tambah Barang Inventaris Baru'}</DialogTitle>
+            <DialogTitle className="text-slate-800 font-bold">{editingAset ? 'Edit Barang Inventaris' : 'Tambah Barang Inventaris Baru'}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label htmlFor="nama_barang" className="text-slate-300">Nama Barang *</Label>
+              <Label htmlFor="nama_barang" className="text-xs font-semibold text-slate-700">Nama Barang *</Label>
               <Input
                 id="nama_barang"
                 value={namaBarang}
                 onChange={(e) => setNamaBarang(e.target.value)}
                 placeholder="Contoh: Sound System Portable / Taplak Altar"
                 required
-                className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-emerald-500"
+                className="bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="kategori" className="text-slate-300">Kategori</Label>
+              <Label htmlFor="kategori" className="text-xs font-semibold text-slate-700">Kategori</Label>
               <Select value={kategori} onValueChange={(val) => val && setKategori(val)}>
-                <SelectTrigger id="kategori" className="bg-slate-800 border-slate-700 text-white">
+                <SelectTrigger id="kategori" className="bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-slate-800 border-slate-700 text-white">
+                <SelectContent className="bg-white border-slate-200 text-slate-900">
                   <SelectItem value="Peralatan Ibadat">Peralatan Ibadat</SelectItem>
                   <SelectItem value="Elektronik & Sound">Elektronik & Sound</SelectItem>
                   <SelectItem value="Mebel & Perabot">Mebel & Perabot</SelectItem>
@@ -313,17 +317,17 @@ export default function AsetPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="tahun_beli" className="text-slate-300">Tahun Beli</Label>
+                <Label htmlFor="tahun_beli" className="text-xs font-semibold text-slate-700">Tahun Beli</Label>
                 <Input
                   id="tahun_beli"
                   type="number"
                   value={tahunBeli}
                   onChange={(e) => setTahunBeli(parseInt(e.target.value) || 2024)}
-                  className="bg-slate-800 border-slate-700 text-white focus:border-emerald-500"
+                  className="bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="jumlah" className="text-slate-300">Jumlah Unit *</Label>
+                <Label htmlFor="jumlah" className="text-xs font-semibold text-slate-700">Jumlah Unit *</Label>
                 <Input
                   id="jumlah"
                   type="number"
@@ -331,13 +335,13 @@ export default function AsetPage() {
                   onChange={(e) => setJumlah(parseInt(e.target.value) || 1)}
                   min={1}
                   required
-                  className="bg-slate-800 border-slate-700 text-white focus:border-emerald-500"
+                  className="bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="harga_satuan" className="text-slate-300">Harga Satuan (Rp) *</Label>
+              <Label htmlFor="harga_satuan" className="text-xs font-semibold text-slate-700">Harga Satuan (Rp) *</Label>
               <Input
                 id="harga_satuan"
                 type="number"
@@ -345,15 +349,15 @@ export default function AsetPage() {
                 onChange={(e) => setHargaSatuan(parseFloat(e.target.value) || 0)}
                 placeholder="0"
                 required
-                className="bg-slate-800 border-slate-700 text-white font-mono font-bold focus:border-emerald-500"
+                className="bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500 font-mono font-bold"
               />
             </div>
 
             <DialogFooter className="pt-4">
-              <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} className="border-slate-700 text-slate-300 hover:bg-slate-800">
+              <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} className="border-slate-300 text-slate-700 hover:bg-slate-100 rounded-xl">
                 Batal
               </Button>
-              <Button type="submit" disabled={submitting} className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold cursor-pointer">
+              <Button type="submit" disabled={submitting} className="bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl cursor-pointer">
                 {submitting ? 'Menyimpan...' : 'Simpan Inventaris'}
               </Button>
             </DialogFooter>
@@ -363,4 +367,5 @@ export default function AsetPage() {
     </div>
   )
 }
+
 

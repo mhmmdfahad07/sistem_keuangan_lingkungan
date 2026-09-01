@@ -153,26 +153,39 @@ export default function DashboardOverviewPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Header Banner */}
-      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border border-slate-700/80 rounded-2xl p-6 text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div>
-          <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold px-3 py-1 rounded-full backdrop-blur-xs">
-            {lingkunganName || 'Lingkungan'}
-          </span>
-          <h1 className="text-2xl font-bold mt-2 tracking-tight">Ringkasan Keuangan Lingkungan</h1>
-          <p className="text-slate-300 text-sm mt-1">
-            Pantau arus kas, posisi saldo bank, data umat (DAFU), dan inventaris aset lingkungan secara akurat.
-          </p>
+      <div className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-full p-0.5 bg-gradient-to-tr from-amber-400 via-emerald-500 to-teal-400 shadow-md shrink-0 flex items-center justify-center">
+            <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center font-extrabold text-xs text-white">
+              SC
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-md border border-amber-200">
+                {lingkunganName || 'Lingkungan'}
+              </span>
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                Gereja St. Clara
+              </span>
+            </div>
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-800 mt-1 tracking-tight">Ringkasan Keuangan Lingkungan</h1>
+            <p className="text-slate-500 text-xs sm:text-sm mt-0.5">
+              Pantau arus kas, posisi saldo bank, data umat (DAFU), dan inventaris aset secara akurat.
+            </p>
+          </div>
         </div>
-        <div className="flex gap-2.5">
+
+        <div className="flex gap-2.5 shrink-0">
           <Link href="/dashboard/jurnal">
-            <Button className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-600/20 border border-emerald-500/30 cursor-pointer">
-              <Receipt className="w-4 h-4 mr-2" />
+            <Button className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-2.5 rounded-xl shadow-xs cursor-pointer">
+              <Receipt className="w-4 h-4 mr-2 text-emerald-400" />
               Input Jurnal
             </Button>
           </Link>
           <Link href="/dashboard/laporan">
-            <Button variant="outline" className="border-slate-700 text-slate-200 hover:bg-slate-800 hover:text-white cursor-pointer">
-              <FileSpreadsheet className="w-4 h-4 mr-2 text-emerald-400" />
+            <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-100 font-semibold rounded-xl cursor-pointer">
+              <FileSpreadsheet className="w-4 h-4 mr-2 text-emerald-600" />
               Laporan
             </Button>
           </Link>
@@ -181,57 +194,57 @@ export default function DashboardOverviewPage() {
 
       {/* Primary Financial Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-slate-900/90 border-slate-800 shadow-md hover:border-slate-700 transition">
+        <Card className="bg-white border-slate-200/90 rounded-2xl p-1 shadow-xs hover:shadow-md transition">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-slate-400">Saldo Kas Bank Akhir</CardTitle>
-            <div className="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center">
-              <Wallet className="w-5 h-5" />
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500">Saldo Kas Bank Akhir</CardTitle>
+            <div className="p-2 bg-slate-100 rounded-xl text-slate-700">
+              <Wallet className="w-4 h-4" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-extrabold text-white tracking-tight">{formatRupiah(saldoKasAkhir)}</div>
-            <p className="text-xs text-slate-400 mt-1">
-              Saldo Awal: <span className="text-slate-300 font-mono">{formatRupiah(saldoAwal)}</span>
+            <div className="text-2xl font-extrabold text-slate-900 tracking-tight">{formatRupiah(saldoKasAkhir)}</div>
+            <p className="text-xs text-slate-500 font-medium mt-1">
+              Saldo Awal: <span className="font-mono text-slate-700">{formatRupiah(saldoAwal)}</span>
             </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900/90 border-slate-800 shadow-md hover:border-slate-700 transition">
+        <Card className="bg-emerald-50/60 border-emerald-200 rounded-2xl p-1 shadow-xs hover:shadow-md transition">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Kas Masuk</CardTitle>
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
-              <TrendingUp className="w-5 h-5" />
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-emerald-800">Total Kas Masuk</CardTitle>
+            <div className="p-2 bg-emerald-100 rounded-xl text-emerald-800">
+              <TrendingUp className="w-4 h-4" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-extrabold text-emerald-400 tracking-tight">{formatRupiah(totalKasMasuk)}</div>
-            <p className="text-xs text-slate-400 mt-1">Penerimaan kas/bank terakumulasi</p>
+            <div className="text-2xl font-extrabold text-emerald-950 tracking-tight">{formatRupiah(totalKasMasuk)}</div>
+            <p className="text-xs text-emerald-700 font-medium mt-1">Penerimaan kas/bank terakumulasi</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900/90 border-slate-800 shadow-md hover:border-slate-700 transition">
+        <Card className="bg-rose-50/60 border-rose-200 rounded-2xl p-1 shadow-xs hover:shadow-md transition">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Kas Keluar</CardTitle>
-            <div className="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center">
-              <TrendingDown className="w-5 h-5" />
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-rose-800">Total Kas Keluar</CardTitle>
+            <div className="p-2 bg-rose-100 rounded-xl text-rose-800">
+              <TrendingDown className="w-4 h-4" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-extrabold text-rose-400 tracking-tight">{formatRupiah(totalKasKeluar)}</div>
-            <p className="text-xs text-slate-400 mt-1">Pengeluaran kas/bank terakumulasi</p>
+            <div className="text-2xl font-extrabold text-rose-950 tracking-tight">{formatRupiah(totalKasKeluar)}</div>
+            <p className="text-xs text-rose-700 font-medium mt-1">Pengeluaran kas/bank terakumulasi</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900/90 border-slate-800 shadow-md hover:border-slate-700 transition">
+        <Card className="bg-amber-50/60 border-amber-200 rounded-2xl p-1 shadow-xs hover:shadow-md transition">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-slate-400">Kepala Keluarga & BIDUK</CardTitle>
-            <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center">
-              <Users className="w-5 h-5" />
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-amber-800">Kepala Keluarga & BIDUK</CardTitle>
+            <div className="p-2 bg-amber-100 rounded-xl text-amber-800">
+              <Users className="w-4 h-4" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-extrabold text-white tracking-tight">{totalKK} <span className="text-sm font-normal text-slate-400">KK</span></div>
-            <p className="text-xs text-emerald-400 font-semibold mt-1">
+            <div className="text-2xl font-extrabold text-amber-950 tracking-tight">{totalKK} <span className="text-sm font-normal text-amber-700">KK</span></div>
+            <p className="text-xs text-amber-800 font-bold mt-1">
               {totalBiduk} Terdaftar BIDUK KAJ
             </p>
           </CardContent>
@@ -241,14 +254,14 @@ export default function DashboardOverviewPage() {
       {/* Main Content Grid: Recent Transactions & Quick Modules */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Transactions Table (2 Columns) */}
-        <Card className="lg:col-span-2 bg-slate-900/90 border-slate-800 shadow-md">
-          <CardHeader className="flex flex-row items-center justify-between border-b border-slate-800 pb-4">
+        <Card className="lg:col-span-2 bg-white border-slate-200 rounded-2xl shadow-xs overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between border-b border-slate-100 pb-4">
             <div>
-              <CardTitle className="text-base font-bold text-white">Transaksi Jurnal Terbaru</CardTitle>
-              <CardDescription className="text-slate-400">Pencatatan kas masuk dan keluar harian</CardDescription>
+              <CardTitle className="text-base font-bold text-slate-800">Transaksi Jurnal Terbaru</CardTitle>
+              <CardDescription className="text-slate-500">Pencatatan kas masuk dan keluar harian</CardDescription>
             </div>
             <Link href="/dashboard/jurnal">
-              <Button variant="ghost" size="sm" className="text-emerald-400 hover:text-emerald-300 hover:bg-slate-800 cursor-pointer">
+              <Button variant="ghost" size="sm" className="text-emerald-700 font-bold hover:text-emerald-800 hover:bg-emerald-50 cursor-pointer">
                 Lihat Semua <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
             </Link>
@@ -259,15 +272,15 @@ export default function DashboardOverviewPage() {
                 Belum ada data transaksi jurnal recorded. Silakan input jurnal baru.
               </div>
             ) : (
-              <div className="divide-y divide-slate-800">
+              <div className="divide-y divide-slate-100">
                 {recentTransactions.map((tx) => (
-                  <div key={tx.id} className="p-4 flex items-center justify-between hover:bg-slate-800/50 transition">
+                  <div key={tx.id} className="p-4 flex items-center justify-between hover:bg-slate-50 transition">
                     <div className="flex items-center space-x-3">
                       <div
                         className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
                           tx.tipe_arus === 'MASUK'
-                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                            : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                            ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                            : 'bg-rose-100 text-rose-800 border border-rose-200'
                         }`}
                       >
                         {tx.tipe_arus === 'MASUK' ? (
@@ -277,15 +290,15 @@ export default function DashboardOverviewPage() {
                         )}
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-white">
+                        <p className="text-sm font-semibold text-slate-900">
                           {tx.keterangan || (tx.tipe_arus === 'MASUK' ? 'Penerimaan Kas' : 'Pengeluaran Kas')}
                         </p>
-                        <div className="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
+                        <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
                           <span>{formatDateIndo(tx.tanggal)}</span>
                           {tx.kepala_keluarga?.nama_kk && (
                             <>
                               <span>•</span>
-                              <span className="font-medium text-slate-300">Penyetor: {tx.kepala_keluarga.nama_kk}</span>
+                              <span className="font-medium text-slate-700">Penyetor: {tx.kepala_keluarga.nama_kk}</span>
                             </>
                           )}
                         </div>
@@ -294,8 +307,8 @@ export default function DashboardOverviewPage() {
 
                     <div className="text-right">
                       <p
-                        className={`text-sm font-bold ${
-                          tx.tipe_arus === 'MASUK' ? 'text-emerald-400' : 'text-rose-400'
+                        className={`text-sm font-extrabold ${
+                          tx.tipe_arus === 'MASUK' ? 'text-emerald-700' : 'text-rose-700'
                         }`}
                       >
                         {tx.tipe_arus === 'MASUK' ? '+' : '-'} {formatRupiah(Number(tx.nominal))}
@@ -313,73 +326,73 @@ export default function DashboardOverviewPage() {
 
         {/* Quick Links & Assets Summary */}
         <div className="space-y-6">
-          <Card className="bg-slate-900/90 border-slate-800 shadow-md">
-            <CardHeader className="pb-3 border-b border-slate-800">
-              <CardTitle className="text-base font-bold text-white">Aset & Inventaris Lingkungan</CardTitle>
+          <Card className="bg-white border-slate-200 rounded-2xl shadow-xs">
+            <CardHeader className="pb-3 border-b border-slate-100">
+              <CardTitle className="text-base font-bold text-slate-800">Aset & Inventaris Lingkungan</CardTitle>
             </CardHeader>
             <CardContent className="pt-4 space-y-3">
-              <div className="p-3.5 bg-slate-800/60 rounded-xl border border-slate-700/60 flex items-center justify-between">
+              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <div className="p-2.5 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-xl">
+                  <div className="p-2.5 bg-amber-100 text-amber-800 rounded-xl border border-amber-200">
                     <Package className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-xs text-slate-400">Estimasi Nilai Inventaris</p>
-                    <p className="text-base font-extrabold text-white mt-0.5">{formatRupiah(totalNilaiAset)}</p>
+                    <p className="text-xs text-slate-500">Estimasi Nilai Inventaris</p>
+                    <p className="text-base font-extrabold text-slate-900 mt-0.5">{formatRupiah(totalNilaiAset)}</p>
                   </div>
                 </div>
                 <Link href="/dashboard/aset">
-                  <Button variant="outline" size="sm" className="border-slate-700 text-slate-200 hover:bg-slate-800 cursor-pointer">Detail</Button>
+                  <Button variant="outline" size="sm" className="border-slate-300 text-slate-700 hover:bg-slate-100 cursor-pointer">Detail</Button>
                 </Link>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-900/90 border-slate-800 shadow-md">
-            <CardHeader className="pb-3 border-b border-slate-800">
-              <CardTitle className="text-base font-bold text-white">Navigasi Modul</CardTitle>
+          <Card className="bg-white border-slate-200 rounded-2xl shadow-xs">
+            <CardHeader className="pb-3 border-b border-slate-100">
+              <CardTitle className="text-base font-bold text-slate-800">Navigasi Modul</CardTitle>
             </CardHeader>
             <CardContent className="pt-4 space-y-2 text-sm">
               <Link
                 href="/dashboard/daftar-isian"
-                className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-800/80 transition border border-slate-800/80 bg-slate-800/30"
+                className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition border border-slate-200/80 bg-slate-50/50"
               >
                 <div className="flex items-center space-x-2.5">
-                  <ClipboardEdit className="w-4 h-4 text-emerald-400" />
-                  <span className="font-semibold text-slate-200">M1. Daftar Isian & Profil</span>
+                  <ClipboardEdit className="w-4 h-4 text-emerald-600" />
+                  <span className="font-semibold text-slate-800">M1. Daftar Isian & Profil</span>
                 </div>
                 <ArrowRight className="w-4 h-4 text-slate-400" />
               </Link>
 
               <Link
                 href="/dashboard/dafu"
-                className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-800/80 transition border border-slate-800/80 bg-slate-800/30"
+                className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition border border-slate-200/80 bg-slate-50/50"
               >
                 <div className="flex items-center space-x-2.5">
-                  <Users className="w-4 h-4 text-emerald-400" />
-                  <span className="font-semibold text-slate-200">M2. DAFU (Data Umat)</span>
+                  <Users className="w-4 h-4 text-emerald-600" />
+                  <span className="font-semibold text-slate-800">M2. DAFU (Data Umat)</span>
                 </div>
                 <ArrowRight className="w-4 h-4 text-slate-400" />
               </Link>
 
               <Link
                 href="/dashboard/jurnal"
-                className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-800/80 transition border border-slate-800/80 bg-slate-800/30"
+                className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition border border-slate-200/80 bg-slate-50/50"
               >
                 <div className="flex items-center space-x-2.5">
-                  <Receipt className="w-4 h-4 text-emerald-400" />
-                  <span className="font-semibold text-slate-200">M4. Jurnal Transaksi</span>
+                  <Receipt className="w-4 h-4 text-emerald-600" />
+                  <span className="font-semibold text-slate-800">M4. Jurnal Transaksi</span>
                 </div>
                 <ArrowRight className="w-4 h-4 text-slate-400" />
               </Link>
 
               <Link
                 href="/dashboard/kartu-setoran"
-                className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-800/80 transition border border-slate-800/80 bg-slate-800/30"
+                className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition border border-slate-200/80 bg-slate-50/50"
               >
                 <div className="flex items-center space-x-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  <span className="font-semibold text-slate-200">M7. Kartu Setoran 12 Bulan</span>
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span className="font-semibold text-slate-800">M7. Kartu Setoran 12 Bulan</span>
                 </div>
                 <ArrowRight className="w-4 h-4 text-slate-400" />
               </Link>
@@ -390,4 +403,5 @@ export default function DashboardOverviewPage() {
     </div>
   )
 }
+
 

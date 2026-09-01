@@ -28,10 +28,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-12 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-950/40 via-slate-950 to-black text-slate-100">
+    <div className="flex min-h-screen items-center justify-center bg-slate-900 px-4 py-12 text-slate-900">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mb-2 shadow-xl backdrop-blur-xs">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-slate-800 border border-slate-700 text-amber-400 mb-2 shadow-xl">
             <Building2 className="w-9 h-9" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
@@ -42,18 +42,18 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <Card className="border-slate-800 bg-slate-900/90 backdrop-blur-md shadow-2xl text-slate-100">
-          <CardHeader className="space-y-1 text-center border-b border-slate-800/80 pb-6">
-            <CardTitle className="text-xl font-bold text-white">Masuk / Otomatis Buat Akun</CardTitle>
-            <CardDescription className="text-slate-400">
-              Pilih salah satu peran di bawah atau ketik email terdaftar
+        <Card className="border-slate-200 bg-white shadow-2xl text-slate-900 rounded-2xl">
+          <CardHeader className="space-y-1 text-center border-b border-slate-100 pb-6">
+            <CardTitle className="text-xl font-bold text-slate-800">Masuk ke System</CardTitle>
+            <CardDescription className="text-slate-500">
+              Pilih salah satu peran demo di bawah atau ketik email terdaftar
             </CardDescription>
           </CardHeader>
 
           <CardContent className="pt-6">
             <form action={login} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-300 font-medium">Email Pengguna</Label>
+                <Label htmlFor="email" className="text-xs font-semibold text-slate-700">Email Pengguna</Label>
                 <Input
                   id="email"
                   name="email"
@@ -62,12 +62,12 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="m@example.com"
                   required
-                  className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-emerald-500"
+                  className="bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-slate-300 font-medium">Password</Label>
+                <Label htmlFor="password" className="text-xs font-semibold text-slate-700">Password</Label>
                 <Input
                   id="password"
                   name="password"
@@ -75,27 +75,27 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="bg-slate-800 border-slate-700 text-white focus:border-emerald-500"
+                  className="bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500"
                 />
               </div>
 
               {message && (
-                <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs text-center font-medium leading-relaxed">
+                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs text-center font-bold">
                   {message}
                 </div>
               )}
 
-              <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 transition shadow-lg shadow-emerald-600/20 cursor-pointer">
-                <KeyRound className="w-4 h-4 mr-2" />
+              <Button type="submit" className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl transition shadow-md cursor-pointer">
+                <KeyRound className="w-4 h-4 mr-2 text-emerald-400" />
                 Masuk ke Aplikasi
               </Button>
             </form>
           </CardContent>
 
-          <CardFooter className="flex flex-col space-y-4 border-t border-slate-800/80 pt-6">
+          <CardFooter className="flex flex-col space-y-4 border-t border-slate-100 pt-6">
             <div className="w-full text-center">
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                Klik Pilih Akun Demo Role:
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Pilih Akun Demo Role:
               </span>
             </div>
 
@@ -103,49 +103,50 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => selectDemoAccount('bendahara@example.com')}
-                className={`p-2.5 rounded-lg border text-center transition ${
+                className={`p-2.5 rounded-xl border text-center transition cursor-pointer ${
                   email === 'bendahara@example.com'
-                    ? 'bg-emerald-950/80 border-emerald-500 text-white ring-1 ring-emerald-500'
-                    : 'bg-slate-800/90 border-slate-700 text-slate-300 hover:border-slate-600'
+                    ? 'bg-slate-900 border-slate-900 text-white font-bold shadow-md'
+                    : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                 }`}
               >
-                <span className="font-bold text-blue-400 block truncate">Bendahara</span>
-                <p className="text-[10px] text-slate-400 truncate mt-0.5">bendahara@...</p>
+                <span className={`block truncate ${email === 'bendahara@example.com' ? 'text-emerald-400' : 'text-slate-900 font-bold'}`}>Bendahara</span>
+                <p className="text-[10px] opacity-80 truncate mt-0.5">bendahara@...</p>
               </button>
 
               <button
                 type="button"
                 onClick={() => selectDemoAccount('sekretaris@example.com')}
-                className={`p-2.5 rounded-lg border text-center transition ${
+                className={`p-2.5 rounded-xl border text-center transition cursor-pointer ${
                   email === 'sekretaris@example.com'
-                    ? 'bg-emerald-950/80 border-emerald-500 text-white ring-1 ring-emerald-500'
-                    : 'bg-slate-900/90 border-slate-800 text-slate-300 hover:border-slate-700'
+                    ? 'bg-slate-900 border-slate-900 text-white font-bold shadow-md'
+                    : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                 }`}
               >
-                <span className="font-bold text-emerald-400 block truncate">Sekretaris</span>
-                <p className="text-[10px] text-slate-400 truncate mt-0.5">sekretaris@...</p>
+                <span className={`block truncate ${email === 'sekretaris@example.com' ? 'text-purple-400' : 'text-slate-900 font-bold'}`}>Sekretaris</span>
+                <p className="text-[10px] opacity-80 truncate mt-0.5">sekretaris@...</p>
               </button>
 
               <button
                 type="button"
                 onClick={() => selectDemoAccount('paroki@example.com')}
-                className={`p-2.5 rounded-lg border text-center transition ${
+                className={`p-2.5 rounded-xl border text-center transition cursor-pointer ${
                   email === 'paroki@example.com'
-                    ? 'bg-amber-950/80 border-amber-500 text-white ring-1 ring-amber-500'
-                    : 'bg-slate-900/90 border-slate-800 text-slate-300 hover:border-slate-700'
+                    ? 'bg-slate-900 border-slate-900 text-white font-bold shadow-md'
+                    : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                 }`}
               >
-                <span className="font-bold text-amber-400 block truncate">Paroki</span>
-                <p className="text-[10px] text-slate-400 truncate mt-0.5">paroki@...</p>
+                <span className={`block truncate ${email === 'paroki@example.com' ? 'text-amber-400' : 'text-slate-900 font-bold'}`}>Paroki</span>
+                <p className="text-[10px] opacity-80 truncate mt-0.5">paroki@...</p>
               </button>
             </div>
           </CardFooter>
         </Card>
 
-        <p className="text-center text-xs text-slate-400">
+        <p className="text-center text-xs text-slate-400 font-medium">
           © {new Date().getFullYear()} Gereja St. Clara - Paroki Bekasi Utara
         </p>
       </div>
     </div>
   )
 }
+

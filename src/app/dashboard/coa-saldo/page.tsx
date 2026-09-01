@@ -130,65 +130,65 @@ export default function CoaSaldoPage() {
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       <div>
-        <h1 className="text-2xl font-bold text-white tracking-tight">M3. Master COA & Saldo Awal Pembukuan</h1>
-        <p className="text-sm text-slate-400 mt-1">
+        <h1 className="text-2xl font-bold text-slate-800 tracking-tight">M3. Master COA & Saldo Awal Pembukuan</h1>
+        <p className="text-sm text-slate-500 mt-1">
           Bagan Akun Standar (Chart of Accounts) dan Pengaturan Saldo Awal Kas Bank Lingkungan.
         </p>
       </div>
 
       {/* Saldo Awal Input Card */}
-      <Card className="bg-slate-900/90 border-slate-800 shadow-md">
-        <CardHeader className="bg-slate-800/50 border-b border-slate-800 flex flex-row items-center justify-between">
+      <Card className="bg-white border-slate-200 rounded-2xl shadow-xs">
+        <CardHeader className="bg-slate-50/80 border-b border-slate-100 flex flex-row items-center justify-between">
           <div>
-            <CardTitle className="text-base font-bold text-emerald-400 flex items-center gap-2">
-              <BookOpen className="w-5 h-5" />
+            <CardTitle className="text-base font-bold text-slate-800 flex items-center gap-2">
+              <BookOpen className="w-5 h-5 text-emerald-600" />
               Pengaturan Saldo Awal Bank (Kode Akun 1100)
             </CardTitle>
-            <CardDescription className="text-slate-400">
+            <CardDescription className="text-slate-500">
               {isLocked
                 ? 'Saldo awal terkunci karena jurnal transaksi bulan terkait sudah ditutup (Posted).'
                 : 'Diisi oleh Bendahara saat memulai pembukuan tahun buku.'}
             </CardDescription>
           </div>
           {isLocked && (
-            <span className="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full font-bold flex items-center gap-1">
-              <Lock className="w-3.5 h-3.5 text-amber-400" /> Terkunci (Posted)
+            <span className="text-xs bg-amber-100 text-amber-800 border border-amber-200 px-3 py-1 rounded-full font-bold flex items-center gap-1">
+              <Lock className="w-3.5 h-3.5 text-amber-600" /> Terkunci (Posted)
             </span>
           )}
         </CardHeader>
         <CardContent className="p-6">
           {successMsg && (
-            <div className="p-3 mb-4 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-sm font-medium flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            <div className="p-3 mb-4 rounded-xl bg-emerald-50 text-emerald-900 border border-emerald-200 text-sm font-bold flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
               {successMsg}
             </div>
           )}
 
           <form onSubmit={handleSaveSaldoAwal} className="flex flex-col sm:flex-row items-end gap-4">
             <div className="space-y-2 flex-1">
-              <Label htmlFor="tahun" className="text-slate-300">Tahun Buku</Label>
+              <Label htmlFor="tahun" className="text-xs font-semibold text-slate-700">Tahun Buku</Label>
               <Input
                 id="tahun"
                 value={tahunBuku}
                 onChange={(e) => setTahunBuku(e.target.value)}
                 disabled={isLocked || !isBendahara}
-                className="bg-slate-800 border-slate-700 text-white focus:border-emerald-500"
+                className="bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500"
               />
             </div>
             <div className="space-y-2 flex-1">
-              <Label htmlFor="saldo" className="text-slate-300">Nominal Saldo Awal Bank (Rp)</Label>
+              <Label htmlFor="saldo" className="text-xs font-semibold text-slate-700">Nominal Saldo Awal Bank (Rp)</Label>
               <Input
                 id="saldo"
                 type="number"
                 value={saldoAwal}
                 onChange={(e) => setSaldoAwal(parseFloat(e.target.value) || 0)}
                 disabled={isLocked || !isBendahara}
-                className="bg-slate-800 border-slate-700 text-white font-mono font-bold focus:border-emerald-500"
+                className="bg-white border-slate-300 text-slate-900 font-mono font-bold rounded-xl focus:ring-emerald-500"
               />
             </div>
             {isBendahara && !isLocked && (
-              <Button type="submit" disabled={saving} className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-600/20 cursor-pointer">
-                <Save className="w-4 h-4 mr-2" />
+              <Button type="submit" disabled={saving} className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-2.5 rounded-xl shadow-xs cursor-pointer">
+                <Save className="w-4 h-4 mr-2 text-emerald-400" />
                 {saving ? 'Menyimpan...' : 'Simpan Saldo Awal'}
               </Button>
             )}
@@ -197,31 +197,31 @@ export default function CoaSaldoPage() {
       </Card>
 
       {/* COA Table Card */}
-      <Card className="bg-slate-900/90 border-slate-800 shadow-md">
-        <CardHeader className="border-b border-slate-800">
-          <CardTitle className="text-base font-bold text-white">Master Chart of Accounts (COA)</CardTitle>
-          <CardDescription className="text-slate-400">Standar kode akun transaksi Gereja St. Clara</CardDescription>
+      <Card className="bg-white border-slate-200 rounded-2xl shadow-xs overflow-hidden">
+        <CardHeader className="border-b border-slate-100">
+          <CardTitle className="text-base font-bold text-slate-800">Master Chart of Accounts (COA)</CardTitle>
+          <CardDescription className="text-slate-500">Standar kode akun transaksi Gereja St. Clara</CardDescription>
         </CardHeader>
         <CardContent className="p-0">
           <Table>
-            <TableHeader className="bg-slate-800/80 border-b border-slate-800">
-              <TableRow className="border-slate-800">
-                <TableHead className="w-24 text-slate-300">Kode Akun</TableHead>
-                <TableHead className="text-slate-300">Nama Akun / Klasifikasi</TableHead>
-                <TableHead className="w-32 text-center text-slate-300">Tipe Normal</TableHead>
+            <TableHeader className="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+              <TableRow>
+                <TableHead className="w-24 text-slate-700 font-bold">Kode Akun</TableHead>
+                <TableHead className="text-slate-800 font-bold">Nama Akun / Klasifikasi</TableHead>
+                <TableHead className="w-32 text-center text-slate-800 font-bold">Tipe Normal</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody className="divide-y divide-slate-800">
+            <TableBody className="divide-y divide-slate-100">
               {coaList.map((c) => (
-                <TableRow key={c.id} className="hover:bg-slate-800/50 border-slate-800">
-                  <TableCell className="font-mono font-bold text-emerald-400">{c.id}</TableCell>
-                  <TableCell className="font-semibold text-white">{c.nama_akun}</TableCell>
+                <TableRow key={c.id} className="hover:bg-slate-50 transition">
+                  <TableCell className="font-mono font-bold text-emerald-700">{c.id}</TableCell>
+                  <TableCell className="font-semibold text-slate-900">{c.nama_akun}</TableCell>
                   <TableCell className="text-center">
                     <span
                       className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${
                         c.tipe === 'DEBIT'
-                          ? 'bg-blue-500/20 text-blue-300 border-blue-500/30'
-                          : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                          ? 'bg-blue-100 text-blue-800 border-blue-200'
+                          : 'bg-emerald-100 text-emerald-800 border-emerald-200'
                       }`}
                     >
                       {c.tipe}
@@ -236,4 +236,5 @@ export default function CoaSaldoPage() {
     </div>
   )
 }
+
 
