@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
-import { UserRole, UserProfile, KepalaKeluarga, ProfilLingkungan } from '@/lib/types'
+import { UserRole, UserProfile, KepalaKeluarga, ProfilLingkungan, Lingkungan } from '@/lib/types'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -19,6 +19,7 @@ export default function DaftarIsianPage() {
 
   const [lingkunganId, setLingkunganId] = useState<string | null>(null)
   const [namaLingkungan, setNamaLingkungan] = useState<string>('')
+  const [lingkunganList, setLingkunganList] = useState<Lingkungan[]>([])
   const [kkList, setKkList] = useState<KepalaKeluarga[]>([])
 
   // Form State
@@ -66,29 +67,41 @@ export default function DaftarIsianPage() {
           })
         }
 
+        const { data: allL } = await supabase.from('lingkungan').select('id, nama_lingkungan').order('nama_lingkungan', { ascending: true })
+        if (allL) setLingkunganList(allL)
+
         let targetLingkunganId = localStorage.getItem('selected_lingkungan_id')
-        if (!targetLingkunganId) {
-          const { data: lData } = await supabase.from('lingkungan').select('id, nama_lingkungan').limit(1).maybeSingle()
-          if (lData) {
-            targetLingkunganId = lData.id
-            setNamaLingkungan(lData.nama_lingkungan)
-          }
-        } else {
-          const { data: lData } = await supabase.from('lingkungan').select('nama_lingkungan').eq('id', targetLingkunganId).maybeSingle()
-          if (lData) setNamaLingkungan(lData.nama_lingkungan)
+        if (!targetLingkunganId && allL && allL.length > 0) {
+          targetLingkunganId = allL[0].id
         }
 
-        setLingkunganId(targetLingkunganId)
-
         if (targetLingkunganId) {
-          // Load KK list for droplists
+          const matched = allL?.find(l => l.id === targetLingkunganId)
+          if (matched) setNamaLingkungan(matched.nama_lingkungan)
+
+          setLingkunganId(targetLingkunganId)
+
+          // Load KK list for droplists with local persistence merge
           const { data: kks } = await supabase
             .from('kepala_keluarga')
             .select('*')
             .eq('lingkungan_id', targetLingkunganId)
             .order('nama_kk', { ascending: true })
 
-          if (kks) setKkList(kks)
+          let dbKks = kks || []
+          const localSaved = localStorage.getItem(`custom_kks_${targetLingkunganId}`)
+          if (localSaved) {
+            try {
+              const parsed: KepalaKeluarga[] = JSON.parse(localSaved)
+              const combinedMap = new Map<string, KepalaKeluarga>()
+              dbKks.forEach(k => combinedMap.set(k.id, k))
+              parsed.forEach(k => combinedMap.set(k.id, k))
+              dbKks = Array.from(combinedMap.values())
+            } catch (e) {
+              console.error(e)
+            }
+          }
+          setKkList(dbKks.sort((a, b) => a.nama_kk.localeCompare(b.nama_kk)))
 
           // Load Profil Lingkungan
           const { data: profil } = await supabase
@@ -130,6 +143,55 @@ export default function DaftarIsianPage() {
 
     loadData()
   }, [supabase])
+
+  const handleLingkunganSelect = async (id: string) => {
+    setLingkunganId(id)
+    localStorage.setItem('selected_lingkungan_id', id)
+    const selected = lingkunganList.find(l => l.id === id)
+    if (selected) setNamaLingkungan(selected.nama_lingkungan)
+
+    // Reload KK list & Profil for newly selected Lingkungan
+    const { data: kks } = await supabase.from('kepala_keluarga').select('*').eq('lingkungan_id', id).order('nama_kk', { ascending: true })
+    let dbKks = kks || []
+    const localSaved = localStorage.getItem(`custom_kks_${id}`)
+    if (localSaved) {
+      try {
+        const parsed: KepalaKeluarga[] = JSON.parse(localSaved)
+        const combinedMap = new Map<string, KepalaKeluarga>()
+        dbKks.forEach(k => combinedMap.set(k.id, k))
+        parsed.forEach(k => combinedMap.set(k.id, k))
+        dbKks = Array.from(combinedMap.values())
+      } catch (e) {
+        console.error(e)
+      }
+    }
+    setKkList(dbKks.sort((a, b) => a.nama_kk.localeCompare(b.nama_kk)))
+
+    const { data: profil } = await supabase.from('profil_lingkungan').select('*').eq('lingkungan_id', id).maybeSingle()
+    if (profil) {
+      setProfilId(profil.id)
+      setKetuaId(profil.ketua_id || '')
+      setSekretarisId(profil.sekretaris_id || '')
+      setBendaharaId(profil.bendahara_id || '')
+      setTeleponBendahara(profil.telepon_bendahara || '')
+      setPeriodeMasaBakti(profil.periode_masa_bakti || '2024-2026')
+      setIsHubKerabat(!!profil.is_hub_kerabat)
+      setIsBendaharaKaj(!!profil.is_bendahara_kaj)
+      setJenisRekening(profil.jenis_rekening || 'Tabungan')
+      setNamaBank(profil.nama_bank || 'BCA')
+      setNoRekening(profil.no_rekening || '')
+      setTahunBuku(profil.tahun_buku || '2026')
+      setBulanSaldo(profil.bulan_saldo || 1)
+      setSaldoAwal(Number(profil.saldo_awal || 0))
+    } else {
+      setProfilId(null)
+      setKetuaId('')
+      setSekretarisId('')
+      setBendaharaId('')
+      setAlamatBendahara('')
+      setTeleponBendahara('')
+    }
+  }
 
   // Handle Bendahara Selection auto-fill address
   const handleBendaharaSelect = (id: string) => {
@@ -245,7 +307,22 @@ export default function DaftarIsianPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="nama_lingkungan" className="text-xs font-semibold text-slate-700">Nama Lingkungan</Label>
-                <Input id="nama_lingkungan" value={namaLingkungan} disabled className="bg-slate-100 border-slate-200 font-semibold text-slate-900 rounded-xl" />
+                <Select
+                  value={lingkunganId || ''}
+                  onValueChange={(val) => val && handleLingkunganSelect(val)}
+                  disabled={!isSekretarisEditable}
+                >
+                  <SelectTrigger id="nama_lingkungan" className="bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500 font-semibold">
+                    <SelectValue placeholder="-- Pilih Lingkungan --" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60 overflow-y-auto bg-white border-slate-200 text-slate-900">
+                    {lingkunganList.map((l) => (
+                      <SelectItem key={l.id} value={l.id}>
+                        Lingkungan {l.nama_lingkungan}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-2">

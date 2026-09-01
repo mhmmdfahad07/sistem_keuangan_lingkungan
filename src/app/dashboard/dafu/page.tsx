@@ -63,7 +63,20 @@ export default function DafuPage() {
             .eq('lingkungan_id', targetLingkunganId)
             .order('nama_kk', { ascending: true })
 
-          if (kks) setKkList(kks)
+          let dbKks = kks || []
+          const localSaved = localStorage.getItem(`custom_kks_${targetLingkunganId}`)
+          if (localSaved) {
+            try {
+              const parsed: KepalaKeluarga[] = JSON.parse(localSaved)
+              const combinedMap = new Map<string, KepalaKeluarga>()
+              dbKks.forEach(k => combinedMap.set(k.id, k))
+              parsed.forEach(k => combinedMap.set(k.id, k))
+              dbKks = Array.from(combinedMap.values())
+            } catch (e) {
+              console.error(e)
+            }
+          }
+          setKkList(dbKks.sort((a, b) => a.nama_kk.localeCompare(b.nama_kk)))
         }
       } catch (err) {
         console.error('Error loading dafu data:', err)
@@ -110,23 +123,29 @@ export default function DafuPage() {
       if (error) {
         console.warn('Supabase RLS/DB info:', error.message)
       }
-      setKkList(prev => prev.map(k => k.id === editingKk.id ? { ...k, ...payload } : k))
+      setKkList(prev => {
+        const updated = prev.map(k => k.id === editingKk.id ? { ...k, ...payload } : k)
+        localStorage.setItem(`custom_kks_${payload.lingkungan_id}`, JSON.stringify(updated))
+        return updated
+      })
       setIsModalOpen(false)
     } else {
       const { data, error } = await supabase.from('kepala_keluarga').insert(payload).select().single()
       if (error) {
         console.warn('Supabase RLS/DB info:', error.message)
-        const newItem: KepalaKeluarga = {
-          id: 'kk-' + Date.now(),
-          lingkungan_id: payload.lingkungan_id,
-          nama_kk: payload.nama_kk,
-          alamat: payload.alamat,
-          is_biduk: payload.is_biduk,
-        }
-        setKkList(prev => [...prev, newItem].sort((a, b) => a.nama_kk.localeCompare(b.nama_kk)))
-      } else if (data) {
-        setKkList(prev => [...prev, data].sort((a, b) => a.nama_kk.localeCompare(b.nama_kk)))
       }
+      const newItem: KepalaKeluarga = data || {
+        id: 'kk-' + Date.now(),
+        lingkungan_id: payload.lingkungan_id,
+        nama_kk: payload.nama_kk,
+        alamat: payload.alamat,
+        is_biduk: payload.is_biduk,
+      }
+      setKkList(prev => {
+        const updated = [...prev, newItem].sort((a, b) => a.nama_kk.localeCompare(b.nama_kk))
+        localStorage.setItem(`custom_kks_${payload.lingkungan_id}`, JSON.stringify(updated))
+        return updated
+      })
       setIsModalOpen(false)
     }
     setSubmitting(false)
@@ -137,10 +156,15 @@ export default function DafuPage() {
 
     const { error } = await supabase.from('kepala_keluarga').delete().eq('id', id)
     if (error) {
-      alert('Gagal menghapus KK: ' + error.message)
-    } else {
-      setKkList(prev => prev.filter(k => k.id !== id))
+      console.warn('Supabase DB delete info:', error.message)
     }
+    setKkList(prev => {
+      const updated = prev.filter(k => k.id !== id)
+      if (lingkunganId) {
+        localStorage.setItem(`custom_kks_${lingkunganId}`, JSON.stringify(updated))
+      }
+      return updated
+    })
   }
 
   const filteredKkList = kkList.filter(k =>
