@@ -27,6 +27,10 @@ export interface ProfilLingkungan {
   ketua_id: string | null;
   sekretaris_id: string | null;
   bendahara_id: string | null;
+  ketua_nama?: string | null;
+  sekretaris_nama?: string | null;
+  bendahara_nama?: string | null;
+  alamat_bendahara?: string | null;
   telepon_bendahara: string | null;
   periode_masa_bakti: string | null;
   is_hub_kerabat: boolean;

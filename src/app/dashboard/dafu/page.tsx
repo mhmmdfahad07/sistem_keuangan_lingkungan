@@ -2,15 +2,16 @@
 
 import React, { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
-import { UserRole, UserProfile, KepalaKeluarga } from '@/lib/types'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { UserRole, UserProfile, KepalaKeluarga, Lingkungan } from '@/lib/types'
+import { MASTER_LINGKUNGAN_LIST, formatNamaLingkungan } from '@/lib/constants'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Plus, Search, Pencil, Trash2, Users, ShieldCheck, CheckCircle2, XCircle, Lock } from 'lucide-react'
+import { Plus, Search, Pencil, Trash2, Users, ShieldCheck, CheckCircle2, XCircle, Lock, Building } from 'lucide-react'
 
 export default function DafuPage() {
   const supabase = createClient()
@@ -18,6 +19,7 @@ export default function DafuPage() {
   const [loading, setLoading] = useState(true)
   const [lingkunganId, setLingkunganId] = useState<string | null>(null)
   const [lingkunganName, setLingkunganName] = useState<string>('')
+  const [lingkunganList, setLingkunganList] = useState<Lingkungan[]>([])
 
   const [kkList, setKkList] = useState<KepalaKeluarga[]>([])
   const [searchQuery, setSearchQuery] = useState('')
@@ -29,6 +31,27 @@ export default function DafuPage() {
   const [formAlamat, setFormAlamat] = useState('')
   const [formIsBiduk, setFormIsBiduk] = useState<boolean>(true)
   const [submitting, setSubmitting] = useState(false)
+
+  const prepareMasterLingkunganList = (dbList: Lingkungan[]): Lingkungan[] => {
+    const map = new Map<string, Lingkungan>()
+
+    dbList.forEach(l => {
+      const cleanName = l.nama_lingkungan.replace(/^lingkungan\s+/i, '').trim()
+      map.set(cleanName.toLowerCase(), { id: l.id, nama_lingkungan: cleanName })
+    })
+
+    MASTER_LINGKUNGAN_LIST.forEach((mName) => {
+      const key = mName.toLowerCase().trim()
+      if (!map.has(key)) {
+        map.set(key, {
+          id: `csv-${key.replace(/[^a-z0-9]/g, '-')}`,
+          nama_lingkungan: mName
+        })
+      }
+    })
+
+    return Array.from(map.values()).sort((a, b) => a.nama_lingkungan.localeCompare(b.nama_lingkungan))
+  }
 
   useEffect(() => {
     async function loadData() {
@@ -58,41 +81,20 @@ export default function DafuPage() {
           })
         }
 
+        const { data: allL } = await supabase.from('lingkungan').select('id, nama_lingkungan').order('nama_lingkungan', { ascending: true })
+        const masterList = prepareMasterLingkunganList(allL || [])
+        setLingkunganList(masterList)
+
         let targetLingkunganId = localStorage.getItem('selected_lingkungan_id')
-        if (!targetLingkunganId) {
-          const { data: lData } = await supabase.from('lingkungan').select('id, nama_lingkungan').limit(1).maybeSingle()
-          if (lData) {
-            targetLingkunganId = lData.id
-            setLingkunganName(lData.nama_lingkungan)
-          }
-        } else {
-          const { data: lData } = await supabase.from('lingkungan').select('nama_lingkungan').eq('id', targetLingkunganId).maybeSingle()
-          if (lData) setLingkunganName(lData.nama_lingkungan)
+        if (!targetLingkunganId && masterList.length > 0) {
+          targetLingkunganId = masterList[0].id
         }
 
-        setLingkunganId(targetLingkunganId)
-
         if (targetLingkunganId) {
-          const { data: kks } = await supabase
-            .from('kepala_keluarga')
-            .select('*')
-            .eq('lingkungan_id', targetLingkunganId)
-            .order('nama_kk', { ascending: true })
-
-          let dbKks = kks || []
-          const localSaved = localStorage.getItem(`custom_kks_${targetLingkunganId}`)
-          if (localSaved) {
-            try {
-              const parsed: KepalaKeluarga[] = JSON.parse(localSaved)
-              const combinedMap = new Map<string, KepalaKeluarga>()
-              dbKks.forEach(k => combinedMap.set(k.id, k))
-              parsed.forEach(k => combinedMap.set(k.id, k))
-              dbKks = Array.from(combinedMap.values())
-            } catch (e) {
-              console.error(e)
-            }
-          }
-          setKkList(dbKks.sort((a, b) => a.nama_kk.localeCompare(b.nama_kk)))
+          const matched = masterList.find(l => l.id === targetLingkunganId)
+          if (matched) setLingkunganName(matched.nama_lingkungan)
+          setLingkunganId(targetLingkunganId)
+          await loadKks(targetLingkunganId)
         }
       } catch (err) {
         console.error('Error loading dafu data:', err)
@@ -103,6 +105,50 @@ export default function DafuPage() {
 
     loadData()
   }, [supabase])
+
+  const loadKks = async (id: string) => {
+    const { data: kks } = await supabase
+      .from('kepala_keluarga')
+      .select('*')
+      .eq('lingkungan_id', id)
+      .order('nama_kk', { ascending: true })
+
+    let dbKks = kks || []
+    const localSaved = localStorage.getItem(`custom_kks_${id}`)
+    if (localSaved) {
+      try {
+        const parsed: KepalaKeluarga[] = JSON.parse(localSaved)
+        const combinedMap = new Map<string, KepalaKeluarga>()
+        dbKks.forEach(k => combinedMap.set(k.id, k))
+        parsed.forEach(k => combinedMap.set(k.id, k))
+        dbKks = Array.from(combinedMap.values())
+      } catch (e) {
+        console.error(e)
+      }
+    }
+    const allSaved = localStorage.getItem('custom_kks_all_store')
+    if (allSaved) {
+      try {
+        const allParsed: KepalaKeluarga[] = JSON.parse(allSaved)
+        const matched = allParsed.filter(k => k.lingkungan_id === id)
+        const combinedMap = new Map<string, KepalaKeluarga>()
+        dbKks.forEach(k => combinedMap.set(k.id, k))
+        matched.forEach(k => combinedMap.set(k.id, k))
+        dbKks = Array.from(combinedMap.values())
+      } catch (e) {
+        console.error(e)
+      }
+    }
+    setKkList(dbKks.sort((a, b) => a.nama_kk.localeCompare(b.nama_kk)))
+  }
+
+  const handleLingkunganChange = async (id: string) => {
+    setLingkunganId(id)
+    localStorage.setItem('selected_lingkungan_id', id)
+    const selected = lingkunganList.find(l => l.id === id)
+    if (selected) setLingkunganName(selected.nama_lingkungan)
+    await loadKks(id)
+  }
 
   const userRole = userProfile?.role || 'SEKRETARIS'
   const canEdit = userRole === 'SEKRETARIS'
@@ -220,27 +266,49 @@ export default function DafuPage() {
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#1B2130] tracking-tight font-serif">DAFU (Daftar Umat / Kepala Keluarga)</h1>
           <p className="text-sm text-slate-500 mt-1">
-            Master Data Keluarga Lingkungan <span className="text-emerald-700 font-semibold">{lingkunganName}</span>. Dikurasi & dikelola oleh Sekretaris.
+            Master Data Umat Lingkungan <span className="text-emerald-700 font-semibold">{formatNamaLingkungan(lingkunganName)}</span>. Dikurasi & dikelola oleh Sekretaris.
           </p>
         </div>
-        {canEdit ? (
-          <Button onClick={openAddModal} className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-2.5 rounded-xl shadow-xs cursor-pointer">
-            <Plus className="w-4 h-4 mr-2 text-emerald-400" />
-            Tambah Kepala Keluarga
-          </Button>
-        ) : userRole === 'BENDAHARA' ? (
-          <span className="text-xs bg-amber-100 text-amber-800 border border-amber-200 px-3 py-2 rounded-xl flex items-center gap-1.5 font-bold shadow-xs">
-            <Lock className="w-4 h-4 text-amber-600" /> Read Only (Khusus Sekretaris)
-          </span>
-        ) : (
-          <span className="text-xs bg-purple-100 text-purple-800 border border-purple-200 px-3 py-2 rounded-xl flex items-center gap-1.5 font-bold shadow-xs">
-            <Lock className="w-4 h-4 text-purple-600" /> Read Only (Pengawas Paroki)
-          </span>
-        )}
+
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          {/* Lingkungan Quick Switcher */}
+          <div className="w-full sm:w-64">
+            <Select value={lingkunganId || ''} onValueChange={(val) => val && handleLingkunganChange(val)}>
+              <SelectTrigger className="bg-white border-slate-300 text-slate-900 rounded-xl focus:ring-emerald-500 font-semibold h-11">
+                <Building className="w-4 h-4 text-emerald-600 mr-2 shrink-0" />
+                <SelectValue placeholder="— Pilih Lingkungan —">
+                  {lingkunganName ? formatNamaLingkungan(lingkunganName) : '— Pilih Lingkungan —'}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent className="max-h-60 overflow-y-auto bg-white border-slate-200 text-slate-900">
+                {lingkunganList.map((l) => (
+                  <SelectItem key={l.id} value={l.id}>
+                    {formatNamaLingkungan(l.nama_lingkungan)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {canEdit ? (
+            <Button onClick={openAddModal} className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-2.5 rounded-xl shadow-xs cursor-pointer h-11 shrink-0">
+              <Plus className="w-4 h-4 mr-2 text-emerald-400" />
+              Tambah Kepala Keluarga
+            </Button>
+          ) : userRole === 'BENDAHARA' ? (
+            <span className="text-xs bg-amber-100 text-amber-800 border border-amber-200 px-3 py-2 rounded-xl flex items-center gap-1.5 font-bold shadow-xs shrink-0">
+              <Lock className="w-4 h-4 text-amber-600" /> Read Only (Khusus Sekretaris)
+            </span>
+          ) : (
+            <span className="text-xs bg-purple-100 text-purple-800 border border-purple-200 px-3 py-2 rounded-xl flex items-center gap-1.5 font-bold shadow-xs shrink-0">
+              <Lock className="w-4 h-4 text-purple-600" /> Read Only (Pengawas Paroki)
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Summary Cards */}
@@ -309,7 +377,7 @@ export default function DafuPage() {
               {filteredKkList.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={canEdit ? 5 : 4} className="text-center py-8 text-slate-400">
-                    Tidak ada data Kepala Keluarga ditemukan.
+                    Tidak ada data Kepala Keluarga ditemukan untuk {formatNamaLingkungan(lingkunganName)}.
                   </TableCell>
                 </TableRow>
               ) : (
@@ -414,5 +482,3 @@ export default function DafuPage() {
     </div>
   )
 }
-
-
