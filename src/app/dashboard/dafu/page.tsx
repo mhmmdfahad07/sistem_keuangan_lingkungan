@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Plus, Search, Pencil, Trash2, Users, ShieldCheck, CheckCircle2, XCircle, Lock, Building } from 'lucide-react'
+import { Plus, Search, Pencil, Trash2, Users, ShieldCheck, CheckCircle2, XCircle, Lock, Building, Crown, FileText, Wallet } from 'lucide-react'
 
 export default function DafuPage() {
   const supabase = createClient()
@@ -24,6 +24,14 @@ export default function DafuPage() {
 
   const [kkList, setKkList] = useState<KepalaKeluarga[]>([])
   const [searchQuery, setSearchQuery] = useState('')
+
+  // Pengurus Role State (Synced with Daftar Isian)
+  const [ketuaId, setKetuaId] = useState<string | null>(null)
+  const [ketuaNama, setKetuaNama] = useState<string>('')
+  const [sekretarisId, setSekretarisId] = useState<string | null>(null)
+  const [sekretarisNama, setSekretarisNama] = useState<string>('')
+  const [bendaharaId, setBendaharaId] = useState<string | null>(null)
+  const [bendaharaNama, setBendaharaNama] = useState<string>('')
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -95,7 +103,7 @@ export default function DafuPage() {
           const matched = masterList.find(l => l.id === targetLingkunganId)
           if (matched) setLingkunganName(matched.nama_lingkungan)
           setLingkunganId(targetLingkunganId)
-          await loadKks(targetLingkunganId)
+          await loadKksAndProfil(targetLingkunganId, matched?.nama_lingkungan || '')
         }
       } catch (err) {
         console.error('Error loading dafu data:', err)
@@ -107,7 +115,8 @@ export default function DafuPage() {
     loadData()
   }, [supabase])
 
-  const loadKks = async (id: string) => {
+  const loadKksAndProfil = async (id: string, lName: string) => {
+    // 1. Fetch KK List
     const { data: kks } = await supabase
       .from('kepala_keluarga')
       .select('*')
@@ -140,18 +149,82 @@ export default function DafuPage() {
         console.error(e)
       }
     }
-    const selectedL = lingkunganList.find(l => l.id === id)
-    const lName = selectedL?.nama_lingkungan || lingkunganName || 'Lingkungan'
-    const finalKks = ensureDummyKksForLingkungan(id, lName, dbKks)
+
+    const finalKks = ensureDummyKksForLingkungan(id, lName || 'Lingkungan', dbKks)
     setKkList(finalKks)
+
+    // 2. Fetch Profil Lingkungan (Pengurus Roles)
+    setKetuaId(null)
+    setKetuaNama('')
+    setSekretarisId(null)
+    setSekretarisNama('')
+    setBendaharaId(null)
+    setBendaharaNama('')
+
+    const { data: profil } = await supabase
+      .from('profil_lingkungan')
+      .select('ketua_id, sekretaris_id, bendahara_id, ketua_nama, sekretaris_nama, bendahara_nama, ketua:ketua_id(nama_kk), sekretaris:sekretaris_id(nama_kk), bendahara:bendahara_id(nama_kk)')
+      .eq('lingkungan_id', id)
+      .maybeSingle()
+
+    if (profil) {
+      const pAny = profil as any
+      if (pAny.ketua_id) setKetuaId(pAny.ketua_id)
+      if (pAny.ketua_nama) setKetuaNama(pAny.ketua_nama)
+      else if (pAny.ketua) {
+        const kObj = Array.isArray(pAny.ketua) ? pAny.ketua[0] : pAny.ketua
+        if (kObj?.nama_kk) setKetuaNama(kObj.nama_kk)
+      }
+
+      if (pAny.sekretaris_id) setSekretarisId(pAny.sekretaris_id)
+      if (pAny.sekretaris_nama) setSekretarisNama(pAny.sekretaris_nama)
+      else if (pAny.sekretaris) {
+        const sObj = Array.isArray(pAny.sekretaris) ? pAny.sekretaris[0] : pAny.sekretaris
+        if (sObj?.nama_kk) setSekretarisNama(sObj.nama_kk)
+      }
+
+      if (pAny.bendahara_id) setBendaharaId(pAny.bendahara_id)
+      if (pAny.bendahara_nama) setBendaharaNama(pAny.bendahara_nama)
+      else if (pAny.bendahara) {
+        const bObj = Array.isArray(pAny.bendahara) ? pAny.bendahara[0] : pAny.bendahara
+        if (bObj?.nama_kk) setBendaharaNama(bObj.nama_kk)
+      }
+    }
+
+    // Merge saved local manual entry if any
+    const savedManual = localStorage.getItem(`profil_manual_${id}`)
+    if (savedManual) {
+      try {
+        const p = JSON.parse(savedManual)
+        if (p.ketuaId) setKetuaId(p.ketuaId)
+        if (p.ketuaNama) setKetuaNama(p.ketuaNama)
+        if (p.sekretarisId) setSekretarisId(p.sekretarisId)
+        if (p.sekretarisNama) setSekretarisNama(p.sekretarisNama)
+        if (p.bendaharaId) setBendaharaId(p.bendaharaId)
+        if (p.bendaharaNama) setBendaharaNama(p.bendaharaNama)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+
+    // Default dummy pengurus assignment if none set yet
+    if (!savedManual && !profil && finalKks.length >= 3) {
+      setKetuaNama(finalKks[0].nama_kk)
+      setKetuaId(finalKks[0].id)
+      setSekretarisNama(finalKks[1].nama_kk)
+      setSekretarisId(finalKks[1].id)
+      setBendaharaNama(finalKks[2].nama_kk)
+      setBendaharaId(finalKks[2].id)
+    }
   }
 
   const handleLingkunganChange = async (id: string) => {
     setLingkunganId(id)
     localStorage.setItem('selected_lingkungan_id', id)
     const selected = lingkunganList.find(l => l.id === id)
-    if (selected) setLingkunganName(selected.nama_lingkungan)
-    await loadKks(id)
+    const lName = selected?.nama_lingkungan || ''
+    if (selected) setLingkunganName(lName)
+    await loadKksAndProfil(id, lName)
   }
 
   const userRole = userProfile?.role || 'SEKRETARIS'
@@ -257,7 +330,7 @@ export default function DafuPage() {
 
   const totalKK = kkList.length
   const totalBiduk = kkList.filter(k => k.is_biduk).length
-  const bidukPercentage = totalKK > 0 ? Math.round((totalBiduk / totalKK) * 100) : 0
+  const totalNonBiduk = totalKK - totalBiduk
 
   if (loading) {
     return (
@@ -317,6 +390,7 @@ export default function DafuPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Card 1: Total KK */}
         <Card className="bg-white border-slate-200 rounded-2xl p-1 shadow-xs">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500">Total Kepala Keluarga (KK)</CardTitle>
@@ -329,6 +403,7 @@ export default function DafuPage() {
           </CardContent>
         </Card>
 
+        {/* Card 2: Terdaftar BIDUK */}
         <Card className="bg-emerald-50/60 border-emerald-200 rounded-2xl p-1 shadow-xs">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-xs font-bold uppercase tracking-wider text-emerald-800">Terdaftar BIDUK KAJ</CardTitle>
@@ -341,13 +416,16 @@ export default function DafuPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-amber-50/60 border-amber-200 rounded-2xl p-1 shadow-xs">
+        {/* Card 3: Tidak Terdaftar BIDUK KAJ (Updated as requested) */}
+        <Card className="bg-rose-50/60 border-rose-200 rounded-2xl p-1 shadow-xs">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs font-bold uppercase tracking-wider text-amber-800">Persentase Terdata BIDUK</CardTitle>
-            <div className="w-4 h-4 font-bold text-amber-800 text-xs">{bidukPercentage}%</div>
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-rose-800">Tidak Terdaftar BIDUK KAJ</CardTitle>
+            <div className="p-2 bg-rose-100 rounded-xl text-rose-800">
+              <XCircle className="w-4 h-4" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-extrabold text-amber-950">{bidukPercentage}%</div>
+            <div className="text-2xl font-extrabold text-rose-950">{totalNonBiduk} <span className="text-sm font-normal text-rose-700">KK</span></div>
           </CardContent>
         </Card>
       </div>
@@ -385,44 +463,73 @@ export default function DafuPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredKkList.map((kk, idx) => (
-                  <TableRow key={kk.id} className="hover:bg-slate-50 transition">
-                    <TableCell className="text-center font-mono text-xs text-slate-500">{idx + 1}</TableCell>
-                    <TableCell className="font-semibold text-slate-900">{kk.nama_kk}</TableCell>
-                    <TableCell className="text-slate-600 text-sm">{kk.alamat || '-'}</TableCell>
-                    <TableCell className="text-center">
-                      {kk.is_biduk ? (
-                        <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold px-2.5 py-0.5 rounded-full">
-                          <CheckCircle2 className="w-3.5 h-3.5" /> Terdaftar BIDUK
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 bg-slate-100 text-slate-600 border border-slate-200 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                          <XCircle className="w-3.5 h-3.5" /> Belum BIDUK
-                        </span>
-                      )}
-                    </TableCell>
-                    {canEdit && (
-                      <TableCell className="text-right space-x-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => openEditModal(kk)}
-                          className="h-8 w-8 p-0 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg cursor-pointer"
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDelete(kk.id, kk.nama_kk)}
-                          className="h-8 w-8 p-0 text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-lg cursor-pointer"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                filteredKkList.map((kk, idx) => {
+                  const isKetua = (ketuaId && kk.id === ketuaId) || (ketuaNama && kk.nama_kk.toLowerCase().trim() === ketuaNama.toLowerCase().trim())
+                  const isSekretaris = (sekretarisId && kk.id === sekretarisId) || (sekretarisNama && kk.nama_kk.toLowerCase().trim() === sekretarisNama.toLowerCase().trim())
+                  const isBendahara = (bendaharaId && kk.id === bendaharaId) || (bendaharaNama && kk.nama_kk.toLowerCase().trim() === bendaharaNama.toLowerCase().trim())
+
+                  return (
+                    <TableRow key={kk.id} className="hover:bg-slate-50 transition">
+                      <TableCell className="text-center font-mono text-xs text-slate-500">{idx + 1}</TableCell>
+                      
+                      {/* Name + Pengurus Sync Badges */}
+                      <TableCell className="font-semibold text-slate-900">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-slate-900 font-bold">{kk.nama_kk}</span>
+                          
+                          {isKetua && (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-blue-100 text-blue-900 border border-blue-300 px-2 py-0.5 rounded-md shadow-2xs">
+                              <Crown className="w-3 h-3 text-blue-600" /> Ketua Lingkungan
+                            </span>
+                          )}
+                          {isSekretaris && (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-300 px-2 py-0.5 rounded-md shadow-2xs">
+                              <FileText className="w-3 h-3 text-emerald-600" /> Sekretaris
+                            </span>
+                          )}
+                          {isBendahara && (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded-md shadow-2xs">
+                              <Wallet className="w-3 h-3 text-amber-600" /> Bendahara
+                            </span>
+                          )}
+                        </div>
                       </TableCell>
-                    )}
-                  </TableRow>
-                ))
+
+                      <TableCell className="text-slate-600 text-sm">{kk.alamat || '-'}</TableCell>
+                      <TableCell className="text-center">
+                        {kk.is_biduk ? (
+                          <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold px-2.5 py-0.5 rounded-full">
+                            <CheckCircle2 className="w-3.5 h-3.5" /> Terdaftar BIDUK
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 bg-slate-100 text-slate-600 border border-slate-200 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                            <XCircle className="w-3.5 h-3.5" /> Belum BIDUK
+                          </span>
+                        )}
+                      </TableCell>
+                      {canEdit && (
+                        <TableCell className="text-right space-x-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => openEditModal(kk)}
+                            className="h-8 w-8 p-0 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg cursor-pointer"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDelete(kk.id, kk.nama_kk)}
+                            className="h-8 w-8 p-0 text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-lg cursor-pointer"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  )
+                })
               )}
             </TableBody>
           </Table>
