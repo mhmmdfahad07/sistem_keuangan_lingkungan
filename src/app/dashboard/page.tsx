@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/client'
 import { JurnalTransaksi, KepalaKeluarga, Aset, ProfilLingkungan } from '@/lib/types'
+import { ensureDummyKksForLingkungan } from '@/lib/dummyData'
 import { formatRupiah, formatDateIndo } from '@/lib/utils'
 import {
   TrendingUp,
@@ -111,13 +112,23 @@ export default function DashboardOverviewPage() {
           // 3. Fetch DAFU (KK)
           const { data: kks } = await supabase
             .from('kepala_keluarga')
-            .select('id, is_biduk')
+            .select('*')
             .eq('lingkungan_id', targetLingkunganId)
 
-          if (kks) {
-            setTotalKK(kks.length)
-            setTotalBiduk(kks.filter(k => k.is_biduk).length)
+          let dbKks = kks || []
+          const localSaved = localStorage.getItem(`custom_kks_${targetLingkunganId}`)
+          if (localSaved) {
+            try {
+              const parsed: KepalaKeluarga[] = JSON.parse(localSaved)
+              const combinedMap = new Map<string, KepalaKeluarga>()
+              dbKks.forEach(k => combinedMap.set(k.id, k))
+              parsed.forEach(k => combinedMap.set(k.id, k))
+              dbKks = Array.from(combinedMap.values())
+            } catch (e) {}
           }
+          const finalKks = ensureDummyKksForLingkungan(targetLingkunganId, lingkunganName || 'Lingkungan', dbKks)
+          setTotalKK(finalKks.length)
+          setTotalBiduk(finalKks.filter(k => k.is_biduk).length)
 
           // 4. Fetch Assets
           const { data: asetList } = await supabase

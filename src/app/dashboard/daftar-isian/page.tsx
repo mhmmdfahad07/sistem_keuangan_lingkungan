@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { createClient } from '@/utils/supabase/client'
 import { UserRole, UserProfile, KepalaKeluarga, Lingkungan } from '@/lib/types'
 import { MASTER_LINGKUNGAN_LIST, formatNamaLingkungan } from '@/lib/constants'
+import { ensureDummyKksForLingkungan } from '@/lib/dummyData'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -156,7 +157,9 @@ export default function DaftarIsianPage() {
         console.error(e)
       }
     }
-    const sortedKks = dbKks.sort((a, b) => a.nama_kk.localeCompare(b.nama_kk))
+    const selectedL = lingkunganList.find(l => l.id === targetLingkunganId)
+    const lName = selectedL?.nama_lingkungan || namaLingkungan || 'Lingkungan'
+    const sortedKks = ensureDummyKksForLingkungan(targetLingkunganId, lName, dbKks)
     setKkList(sortedKks)
 
     // 2. Load Profil Lingkungan

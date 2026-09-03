@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { UserProfile, JurnalTransaksi, KepalaKeluarga, COA } from '@/lib/types'
+import { ensureDummyKksForLingkungan } from '@/lib/dummyData'
 import { TRANSACTION_TYPES, getDoubleEntryMapping } from '@/lib/doubleEntryRules'
 import { formatRupiah, formatDateIndo, MONTH_NAMES } from '@/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -76,13 +77,26 @@ export default function JurnalPage() {
         if (coas) setCoaList(coas)
 
         if (targetLingkunganId) {
-          // Fetch KK List
+          // Fetch KK List with DB + localStorage + Dummy fallback
           const { data: kks } = await supabase
             .from('kepala_keluarga')
             .select('*')
             .eq('lingkungan_id', targetLingkunganId)
             .order('nama_kk', { ascending: true })
-          if (kks) setKkList(kks)
+
+          let dbKks = kks || []
+          const localSaved = localStorage.getItem(`custom_kks_${targetLingkunganId}`)
+          if (localSaved) {
+            try {
+              const parsed: KepalaKeluarga[] = JSON.parse(localSaved)
+              const combinedMap = new Map<string, KepalaKeluarga>()
+              dbKks.forEach(k => combinedMap.set(k.id, k))
+              parsed.forEach(k => combinedMap.set(k.id, k))
+              dbKks = Array.from(combinedMap.values())
+            } catch (e) {}
+          }
+          const finalKks = ensureDummyKksForLingkungan(targetLingkunganId, lingkunganName || 'Lingkungan', dbKks)
+          setKkList(finalKks)
 
           // Fetch Journals for environment
           await fetchJournals(targetLingkunganId)
