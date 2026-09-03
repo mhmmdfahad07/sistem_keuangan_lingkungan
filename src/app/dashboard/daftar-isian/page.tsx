@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 import { UserRole, UserProfile, KepalaKeluarga, Lingkungan } from '@/lib/types'
 import { MASTER_LINGKUNGAN_LIST, formatNamaLingkungan } from '@/lib/constants'
@@ -15,6 +16,7 @@ import { Save, Building, UserCheck, Wallet, Lock, CheckCircle2, Users, ArrowUpRi
 
 export default function DaftarIsianPage() {
   const supabase = createClient()
+  const router = useRouter()
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -246,7 +248,8 @@ export default function DaftarIsianPage() {
     setSaving(true)
     setSuccessMessage(null)
 
-    // Save manual & dropdown state locally
+    // Save manual & dropdown state locally (by ID and normalized slug)
+    const cleanSlug = (namaLingkungan || '').replace(/^lingkungan\s+/i, '').toLowerCase().trim().replace(/[^a-z0-9]/g, '-')
     const manualObj = {
       ketuaId,
       ketuaNama,
@@ -261,6 +264,9 @@ export default function DaftarIsianPage() {
       isBendaharaBiduk,
     }
     localStorage.setItem(`profil_manual_${lingkunganId}`, JSON.stringify(manualObj))
+    if (cleanSlug) {
+      localStorage.setItem(`profil_manual_${cleanSlug}`, JSON.stringify(manualObj))
+    }
 
     const payload: Record<string, any> = {
       lingkungan_id: lingkunganId,
@@ -295,8 +301,11 @@ export default function DaftarIsianPage() {
       console.warn('Supabase Profil update info:', error.message)
     }
     
-    setSuccessMessage('Daftar Isian & Profil Lingkungan berhasil disimpan!')
-    setTimeout(() => setSuccessMessage(null), 4000)
+    setSuccessMessage('Daftar Isian & Profil Lingkungan berhasil disimpan! Mengalihkan ke DAFU...')
+    setTimeout(() => {
+      setSuccessMessage(null)
+      router.push('/dashboard/dafu')
+    }, 1200)
   }
 
   const userRole = userProfile?.role || 'SEKRETARIS'

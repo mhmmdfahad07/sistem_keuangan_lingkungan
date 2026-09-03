@@ -191,8 +191,9 @@ export default function DafuPage() {
       }
     }
 
-    // Merge saved local manual entry if any
-    const savedManual = localStorage.getItem(`profil_manual_${id}`)
+    // Merge saved local manual entry if any (by ID or normalized slug key)
+    const slugKey = (lName || '').toLowerCase().replace(/[^a-z0-9]/g, '-')
+    const savedManual = localStorage.getItem(`profil_manual_${id}`) || (slugKey ? localStorage.getItem(`profil_manual_${slugKey}`) : null)
     if (savedManual) {
       try {
         const p = JSON.parse(savedManual)

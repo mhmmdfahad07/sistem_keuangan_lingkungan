@@ -16,12 +16,14 @@ const LAST_NAMES = [
 ]
 
 export function getDummyKkListForLingkungan(lingkunganId: string, namaLingkungan: string): KepalaKeluarga[] {
-  const cleanName = namaLingkungan.replace(/^lingkungan\s+/i, '').trim() || 'Lingkungan'
+  const cleanName = (namaLingkungan || '').replace(/^lingkungan\s+/i, '').trim() || 'Lingkungan'
+  const normalizedKey = cleanName.toLowerCase().trim()
+  const slugKey = normalizedKey.replace(/[^a-z0-9]/g, '-')
   
-  // Hash function to make names deterministic for each Lingkungan ID/name
+  // Hash function based strictly on normalized Lingkungan name for 100% consistency across all pages
   let hash = 0
-  for (let i = 0; i < (lingkunganId + cleanName).length; i++) {
-    hash = (hash << 5) - hash + (lingkunganId + cleanName).charCodeAt(i)
+  for (let i = 0; i < normalizedKey.length; i++) {
+    hash = (hash << 5) - hash + normalizedKey.charCodeAt(i)
     hash |= 0
   }
   const absHash = Math.abs(hash)
@@ -37,7 +39,7 @@ export function getDummyKkListForLingkungan(lingkunganId: string, namaLingkungan
     const isBiduk = i !== 4
     
     result.push({
-      id: `dummy-kk-${lingkunganId}-${i + 1}`,
+      id: `dummy-kk-${slugKey}-${i + 1}`,
       lingkungan_id: lingkunganId,
       nama_kk: namaKK,
       alamat: `Jl. ${cleanName} No. ${(i + 1) * 3 + (absHash % 5)}`,
