@@ -321,12 +321,6 @@ export default function DaftarIsianPage() {
             Data identitas lingkungan, pengurus (Ketua, Sekretaris, Bendahara), dan informasi pembukuan bank.
           </p>
         </div>
-        {isSekretarisOrAdmin && (
-          <Button onClick={handleSave} disabled={saving} className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-2.5 rounded-xl shadow-xs cursor-pointer">
-            <Save className="w-4 h-4 mr-2 text-emerald-400" />
-            {saving ? 'Menyimpan...' : 'Simpan Perubahan'}
-          </Button>
-        )}
       </div>
 
       {successMessage && (

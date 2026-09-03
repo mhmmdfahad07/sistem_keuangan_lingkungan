@@ -206,16 +206,6 @@ export default function DafuPage() {
         console.error(e)
       }
     }
-
-    // Default dummy pengurus assignment if none set yet
-    if (!savedManual && !profil && finalKks.length >= 3) {
-      setKetuaNama(finalKks[0].nama_kk)
-      setKetuaId(finalKks[0].id)
-      setSekretarisNama(finalKks[1].nama_kk)
-      setSekretarisId(finalKks[1].id)
-      setBendaharaNama(finalKks[2].nama_kk)
-      setBendaharaId(finalKks[2].id)
-    }
   }
 
   const handleLingkunganChange = async (id: string) => {
@@ -478,18 +468,18 @@ export default function DafuPage() {
                           <span className="text-slate-900 font-bold">{kk.nama_kk}</span>
                           
                           {isKetua && (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-blue-100 text-blue-900 border border-blue-300 px-2 py-0.5 rounded-md shadow-2xs">
-                              <Crown className="w-3 h-3 text-blue-600" /> Ketua Lingkungan
+                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md">
+                              Ketua Lingkungan
                             </span>
                           )}
                           {isSekretaris && (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-300 px-2 py-0.5 rounded-md shadow-2xs">
-                              <FileText className="w-3 h-3 text-emerald-600" /> Sekretaris
+                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md">
+                              Sekretaris
                             </span>
                           )}
                           {isBendahara && (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded-md shadow-2xs">
-                              <Wallet className="w-3 h-3 text-amber-600" /> Bendahara
+                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md">
+                              Bendahara
                             </span>
                           )}
                         </div>
